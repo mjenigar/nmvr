@@ -6,10 +6,10 @@ import numpy as np
 class Simulator(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        with open('map.json') as f:
+        with open('map/map.json') as f:
             map_json = json.load(f)
 
-        self.robot = map_json["robot"]
+        # self.robot = map_json["robot"]
         self.map_h = map_json["map_size"]["height"]
         self.map_w = map_json["map_size"]['width']        
         self.cell_size = map_json["cell_size"]
