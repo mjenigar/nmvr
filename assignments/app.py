@@ -21,7 +21,6 @@ def run():
         rclpy.spin(world)
         
         world.destroy_node()
-        rclpy.shutdown()
     elif sys.argv[1] == "sub":
         gui = GUI_listener()
         try:
@@ -30,12 +29,12 @@ def run():
             print("Error: unable to start thread")
         rclpy.spin(gui)
 
-        
         gui.destroy_node()
-        rclpy.shutdown()
     else:
         print("wrong argv")
 
+    rclpy.shutdown()
+    
 
 if __name__ == "__main__":
     run()

@@ -19,15 +19,16 @@ class MapGenerator():
         cells = []
         for i in range(n_cells):
             for j in range(n_cells):
-                val = 1 if np.random.rand() > .5 else 0
+                val = 0 if np.random.rand() > .5 else 0
                 cells.append({"x" : i, "y": j, "value": val})
         
         self.json["map"] = cells
         
-        with open('map.json', 'w') as f:
+        with open('map/map.json', 'w') as f:
             f.write(json.dumps(self.json, ensure_ascii=False, indent=4))
         
+        print("New random map was generated...")
         
 
-m = MapGenerator((0,0), 1000, 25)
+m = MapGenerator((0,0), 1000, 50)
 m.GenerateMap()

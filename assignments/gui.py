@@ -76,12 +76,13 @@ class Simulator(tk.Tk):
     def RightClick(self, event):
         print("right")
     
-
+    
 import rclpy
 
 from rclpy.node import Node
 from std_msgs.msg import String
 
+    
 class GUI_listener(Node):
     def __init__(self):
         super().__init__("gui_listener")
@@ -107,12 +108,5 @@ class GUI_listener(Node):
         print("Load Map")
         self.GUI.DrawMap()
         self.GUI.mainloop()
-        
         # self.GUI.LoadMap()
         
-    
-    
-# s = Simulator()
-# s.DrawGrid()
-# s.mainloop()
-

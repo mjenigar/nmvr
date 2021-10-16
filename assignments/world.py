@@ -5,6 +5,28 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
+class World():
+    # first argument - path to map.json file 
+    def __init__(self, file):
+        self.world_config = self.ReadMap(file)
+        self.world_map = self.world_config["map"]
+        
+        self.PUB = True
+
+    def ReadMap(self, file):
+        with open(file) as f:
+            config = json.load(f)
+            
+        return config
+        
+    def EncodeMap(self):
+        code = ""
+        for pos in self.world_map:
+            code += str(pos["value"])
+            
+        return code
+
+
 class pub_World(Node):
     # first argument - path to map.json file 
     def __init__(self):
@@ -34,37 +56,3 @@ class pub_World(Node):
 
         self.publisher.publish(self.msg)
         self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(self.msg.data), self.msg.data[0:25]))
-
-
-class World():
-    # first argument - path to map.json file 
-    def __init__(self, file):
-        self.world_config = self.ReadMap(file)
-        self.world_map = self.world_config["map"]
-        
-        self.PUB = True
-
-    def ReadMap(self, file):
-        with open(file) as f:
-            config = json.load(f)
-            
-        return config
-        
-    def EncodeMap(self):
-        code = ""
-        for pos in self.world_map:
-            code += str(pos["value"])
-            
-        return code
-
-
-
-# rclpy.init()
-
-# world = World()
-
-# rclpy.spin(world)
-
-# world.destroy_node()
-# rclpy.shutdown()
-
