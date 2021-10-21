@@ -1,6 +1,9 @@
 import rclpy
 
 from world import World
+from robot import Robot
+
+
 # from simulator import Simulator
 
 
@@ -10,8 +13,6 @@ def main():
     rclpy.init()
 
     w = World(MAP_FILE)
-    w.PublishStrMsg("map_cfg", w.GetMapCfg())
-    w.PublishStrMsg("map", w.EncodeMap())
     rclpy.spin(w)
     
     w.destroy_node()
