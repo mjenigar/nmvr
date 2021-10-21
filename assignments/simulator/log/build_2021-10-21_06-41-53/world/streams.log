@@ -1,0 +1,24 @@
+[1.322s] Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/world build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log --single-version-externally-managed
+[1.961s] running egg_info
+[1.963s] writing ../../build/world/world.egg-info/PKG-INFO
+[1.963s] writing dependency_links to ../../build/world/world.egg-info/dependency_links.txt
+[1.963s] writing entry points to ../../build/world/world.egg-info/entry_points.txt
+[1.963s] writing requirements to ../../build/world/world.egg-info/requires.txt
+[1.963s] writing top-level names to ../../build/world/world.egg-info/top_level.txt
+[2.027s] reading manifest file '../../build/world/world.egg-info/SOURCES.txt'
+[2.029s] writing manifest file '../../build/world/world.egg-info/SOURCES.txt'
+[2.029s] running build
+[2.030s] running build_py
+[2.030s] copying world/world.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world
+[2.030s] running install
+[2.031s] running install_lib
+[2.033s] copying /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world/world.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world
+[2.034s] byte-compiling /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world/world.py to world.cpython-38.pyc
+[2.038s] running install_data
+[2.039s] running install_egg_info
+[2.042s] removing '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world-0.0.0-py3.8.egg-info' (and everything under it)
+[2.042s] Copying ../../build/world/world.egg-info to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world-0.0.0-py3.8.egg-info
+[2.044s] running install_scripts
+[2.075s] Installing world script to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/world
+[2.076s] writing list of installed files to '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log'
+[2.112s] Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/world build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log --single-version-externally-managed

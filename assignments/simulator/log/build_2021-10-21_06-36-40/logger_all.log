@@ -1,0 +1,225 @@
+[2.096s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[2.096s] DEBUG:colcon:Parsed command line arguments: Namespace(ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='parallel', ignore_user_meta=False, install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7fa180b966d0>>, merge_install=False, metas=['./colcon.meta'], packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_end=None, packages_ignore=None, packages_ignore_regex=None, packages_select=None, packages_select_build_failed=False, packages_select_by_dep=None, packages_select_regex=None, packages_select_test_failures=False, packages_skip=None, packages_skip_build_finished=False, packages_skip_by_dep=None, packages_skip_regex=None, packages_skip_test_passed=False, packages_skip_up_to=None, packages_start=None, packages_up_to=None, packages_up_to_regex=None, parallel_workers=4, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7fa180b966d0>, verb_name='build', verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7fa180b96c10>)
+[2.246s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[2.250s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[2.250s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[2.251s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[2.251s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[2.251s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[2.251s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator'
+[2.252s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[2.252s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[2.252s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[2.253s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[2.253s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[2.253s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[2.253s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[2.253s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[2.254s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[2.328s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[2.329s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[2.330s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extensions ['ignore', 'ignore_ament_install']
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extension 'ignore'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extension 'ignore_ament_install'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extensions ['colcon_pkg']
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extension 'colcon_pkg'
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extensions ['colcon_meta']
+[2.331s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extension 'colcon_meta'
+[2.332s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extensions ['ros']
+[2.332s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot) by extension 'ros'
+[2.349s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robot' with type 'ros.ament_python' and name 'robot'
+[2.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extensions ['ignore', 'ignore_ament_install']
+[2.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extension 'ignore'
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extension 'ignore_ament_install'
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extensions ['colcon_pkg']
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extension 'colcon_pkg'
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extensions ['colcon_meta']
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extension 'colcon_meta'
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extensions ['ros']
+[2.350s] Level 1:colcon.colcon_core.package_identification:_identify(src/simulator) by extension 'ros'
+[2.358s] DEBUG:colcon.colcon_core.package_identification:Package 'src/simulator' with type 'ros.ament_python' and name 'simulator'
+[2.358s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extensions ['ignore', 'ignore_ament_install']
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extension 'ignore'
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extension 'ignore_ament_install'
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extensions ['colcon_pkg']
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extension 'colcon_pkg'
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extensions ['colcon_meta']
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extension 'colcon_meta'
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extensions ['ros']
+[2.359s] Level 1:colcon.colcon_core.package_identification:_identify(src/world) by extension 'ros'
+[2.361s] DEBUG:colcon.colcon_core.package_identification:Package 'src/world' with type 'ros.ament_python' and name 'world'
+[2.361s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[2.361s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[2.361s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[2.361s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[2.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[2.607s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_args' from command line to 'None'
+[2.608s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_target' from command line to 'None'
+[2.608s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[2.608s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_clean_cache' from command line to 'False'
+[2.608s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_clean_first' from command line to 'False'
+[2.609s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'cmake_force_configure' from command line to 'False'
+[2.609s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'ament_cmake_args' from command line to 'None'
+[2.609s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'catkin_cmake_args' from command line to 'None'
+[2.609s] Level 5:colcon.colcon_core.verb:set package 'robot' build argument 'catkin_skip_building_tests' from command line to 'False'
+[2.610s] DEBUG:colcon.colcon_core.verb:Building package 'robot' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot', 'merge_install': False, 'path': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot', 'symlink_install': False, 'test_result_base': None}
+[2.637s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_args' from command line to 'None'
+[2.638s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_target' from command line to 'None'
+[2.638s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[2.638s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_clean_cache' from command line to 'False'
+[2.639s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_clean_first' from command line to 'False'
+[2.639s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'cmake_force_configure' from command line to 'False'
+[2.639s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'ament_cmake_args' from command line to 'None'
+[2.640s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'catkin_cmake_args' from command line to 'None'
+[2.640s] Level 5:colcon.colcon_core.verb:set package 'simulator' build argument 'catkin_skip_building_tests' from command line to 'False'
+[2.640s] DEBUG:colcon.colcon_core.verb:Building package 'simulator' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator', 'merge_install': False, 'path': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator', 'symlink_install': False, 'test_result_base': None}
+[2.653s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_args' from command line to 'None'
+[2.653s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_target' from command line to 'None'
+[2.653s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_clean_cache' from command line to 'False'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_clean_first' from command line to 'False'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'cmake_force_configure' from command line to 'False'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'ament_cmake_args' from command line to 'None'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'catkin_cmake_args' from command line to 'None'
+[2.654s] Level 5:colcon.colcon_core.verb:set package 'world' build argument 'catkin_skip_building_tests' from command line to 'False'
+[2.654s] DEBUG:colcon.colcon_core.verb:Building package 'world' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world', 'merge_install': False, 'path': '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world', 'symlink_install': False, 'test_result_base': None}
+[2.655s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[2.662s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[2.662s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot' with build type 'ament_python'
+[2.663s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot', 'ament_prefix_path')
+[2.711s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[2.711s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/ament_prefix_path.ps1'
+[2.747s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/ament_prefix_path.dsv'
+[2.750s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/ament_prefix_path.sh'
+[2.755s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.755s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.773s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[2.801s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator' with build type 'ament_python'
+[2.802s] Level 1:colcon.colcon_core.shell:create_environment_hook('simulator', 'ament_prefix_path')
+[2.806s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/ament_prefix_path.ps1'
+[2.812s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/ament_prefix_path.dsv'
+[2.815s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/ament_prefix_path.sh'
+[2.821s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.821s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.824s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[2.829s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world' with build type 'ament_python'
+[2.831s] Level 1:colcon.colcon_core.shell:create_environment_hook('world', 'ament_prefix_path')
+[2.834s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/ament_prefix_path.ps1'
+[2.840s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/ament_prefix_path.dsv'
+[2.841s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/ament_prefix_path.sh'
+[2.845s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.845s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.850s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[3.334s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot'
+[3.336s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.336s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.338s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[3.764s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator'
+[3.766s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.766s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.769s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[4.264s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world'
+[4.266s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.266s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.269s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/galactic'
+[4.300s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/robot build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/install.log --single-version-externally-managed
+[4.316s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/simulator build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/install.log --single-version-externally-managed
+[4.339s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/world build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log --single-version-externally-managed
+[4.990s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/world' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/world build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log --single-version-externally-managed
+[5.003s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world' for CMake module files
+[5.004s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world' for CMake config files
+[5.006s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib'
+[5.007s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/bin'
+[5.008s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/pkgconfig/world.pc'
+[5.008s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages'
+[5.008s] Level 1:colcon.colcon_core.shell:create_environment_hook('world', 'pythonpath')
+[5.010s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/pythonpath.ps1'
+[5.013s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/pythonpath.dsv'
+[5.014s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/hook/pythonpath.sh'
+[5.015s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(world)
+[5.017s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/package.ps1'
+[5.021s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/package.dsv'
+[5.023s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/package.sh'
+[5.026s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/package.bash'
+[5.028s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world/package.zsh'
+[5.031s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/colcon-core/packages/world)
+[5.068s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot' for CMake module files
+[5.069s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/robot build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/install.log --single-version-externally-managed
+[5.070s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot' for CMake config files
+[5.071s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib'
+[5.071s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/bin'
+[5.071s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/pkgconfig/robot.pc'
+[5.071s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages'
+[5.072s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot', 'pythonpath')
+[5.073s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/pythonpath.ps1'
+[5.074s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/pythonpath.dsv'
+[5.075s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/hook/pythonpath.sh'
+[5.076s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robot)
+[5.078s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/package.ps1'
+[5.079s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/package.dsv'
+[5.080s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/package.sh'
+[5.081s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/package.bash'
+[5.082s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/robot/package.zsh'
+[5.082s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/share/colcon-core/packages/robot)
+[5.096s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator' for CMake module files
+[5.097s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/simulator build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/install.log --single-version-externally-managed
+[5.097s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator' for CMake config files
+[5.098s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib'
+[5.098s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/bin'
+[5.098s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/pkgconfig/simulator.pc'
+[5.098s] Level 1:colcon.colcon_core.environment:checking '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages'
+[5.099s] Level 1:colcon.colcon_core.shell:create_environment_hook('simulator', 'pythonpath')
+[5.100s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/pythonpath.ps1'
+[5.100s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/pythonpath.dsv'
+[5.101s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/hook/pythonpath.sh'
+[5.101s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(simulator)
+[5.102s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/package.ps1'
+[5.103s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/package.dsv'
+[5.104s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/package.sh'
+[5.105s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/package.bash'
+[5.105s] INFO:colcon.colcon_core.shell:Creating package script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/simulator/package.zsh'
+[5.106s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/share/colcon-core/packages/simulator)
+[5.106s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[5.107s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[5.107s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[5.107s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[5.136s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[5.136s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[5.136s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[5.162s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[5.164s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/local_setup.ps1'
+[5.166s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/_local_setup_util_ps1.py'
+[5.169s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/setup.ps1'
+[5.173s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/local_setup.sh'
+[5.174s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/_local_setup_util_sh.py'
+[5.175s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/setup.sh'
+[5.178s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/local_setup.bash'
+[5.180s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/setup.bash'
+[5.185s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/local_setup.zsh'
+[5.186s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/setup.zsh'

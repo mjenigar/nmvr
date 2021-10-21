@@ -1,0 +1,35 @@
+running egg_info
+creating ../../build/world/world.egg-info
+writing ../../build/world/world.egg-info/PKG-INFO
+writing dependency_links to ../../build/world/world.egg-info/dependency_links.txt
+writing entry points to ../../build/world/world.egg-info/entry_points.txt
+writing requirements to ../../build/world/world.egg-info/requires.txt
+writing top-level names to ../../build/world/world.egg-info/top_level.txt
+writing manifest file '../../build/world/world.egg-info/SOURCES.txt'
+reading manifest file '../../build/world/world.egg-info/SOURCES.txt'
+writing manifest file '../../build/world/world.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world
+copying world/__init__.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world
+copying world/world.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world
+running install
+running install_lib
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world
+copying /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world/__init__.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world
+copying /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/build/lib/world/world.py -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world
+byte-compiling /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world/__init__.py to __init__.cpython-38.pyc
+byte-compiling /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world/world.py to world.cpython-38.pyc
+running install_data
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/ament_index
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/ament_index/resource_index
+creating /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/ament_index/resource_index/packages
+copying resource/world -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/ament_index/resource_index/packages
+copying package.xml -> /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/share/world
+running install_egg_info
+Copying ../../build/world/world.egg-info to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/python3.8/site-packages/world-0.0.0-py3.8.egg-info
+running install_scripts
+Installing world script to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/world/lib/world
+writing list of installed files to '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/world/install.log'

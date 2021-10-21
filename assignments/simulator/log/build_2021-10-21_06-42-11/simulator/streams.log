@@ -1,0 +1,21 @@
+[1.323s] Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/simulator build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/install.log --single-version-externally-managed
+[1.960s] running egg_info
+[1.961s] writing ../../build/simulator/simulator.egg-info/PKG-INFO
+[1.961s] writing dependency_links to ../../build/simulator/simulator.egg-info/dependency_links.txt
+[1.962s] writing entry points to ../../build/simulator/simulator.egg-info/entry_points.txt
+[1.962s] writing requirements to ../../build/simulator/simulator.egg-info/requires.txt
+[1.962s] writing top-level names to ../../build/simulator/simulator.egg-info/top_level.txt
+[2.027s] reading manifest file '../../build/simulator/simulator.egg-info/SOURCES.txt'
+[2.028s] writing manifest file '../../build/simulator/simulator.egg-info/SOURCES.txt'
+[2.029s] running build
+[2.029s] running build_py
+[2.029s] running install
+[2.030s] running install_lib
+[2.033s] running install_data
+[2.034s] running install_egg_info
+[2.037s] removing '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages/simulator-0.0.0-py3.8.egg-info' (and everything under it)
+[2.037s] Copying ../../build/simulator/simulator.egg-info to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages/simulator-0.0.0-py3.8.egg-info
+[2.048s] running install_scripts
+[2.070s] Installing simulator script to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/simulator
+[2.071s] writing list of installed files to '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/install.log'
+[2.110s] Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/simulator' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/simulator build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/simulator --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/simulator/install.log --single-version-externally-managed

@@ -1,0 +1,21 @@
+[1.345s] Invoking command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/robot build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/install.log --single-version-externally-managed
+[2.053s] running egg_info
+[2.055s] writing ../../build/robot/robot.egg-info/PKG-INFO
+[2.055s] writing dependency_links to ../../build/robot/robot.egg-info/dependency_links.txt
+[2.056s] writing entry points to ../../build/robot/robot.egg-info/entry_points.txt
+[2.056s] writing requirements to ../../build/robot/robot.egg-info/requires.txt
+[2.056s] writing top-level names to ../../build/robot/robot.egg-info/top_level.txt
+[2.114s] reading manifest file '../../build/robot/robot.egg-info/SOURCES.txt'
+[2.116s] writing manifest file '../../build/robot/robot.egg-info/SOURCES.txt'
+[2.116s] running build
+[2.116s] running build_py
+[2.117s] running install
+[2.118s] running install_lib
+[2.121s] running install_data
+[2.122s] running install_egg_info
+[2.126s] removing '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages/robot-0.0.0-py3.8.egg-info' (and everything under it)
+[2.126s] Copying ../../build/robot/robot.egg-info to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages/robot-0.0.0-py3.8.egg-info
+[2.128s] running install_scripts
+[2.161s] Installing robot script to /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/robot
+[2.162s] writing list of installed files to '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/install.log'
+[2.212s] Invoked command in '/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/src/robot' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/robot build --build-base /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/build install --prefix /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/install/robot --record /home/codeyu/dev/school/ZS2021/nmvr/assignments/simulator/build/robot/install.log --single-version-externally-managed
