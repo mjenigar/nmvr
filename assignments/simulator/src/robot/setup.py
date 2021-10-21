@@ -4,7 +4,7 @@ package_name = 'robot'
 
 setup(
     name=package_name,
-    version='0.0.0',
+    version='1.0.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='codeyu',
+    maintainer='Martin Jenigar',
     maintainer_email='martin.jenigar@student.tuke.sk',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Robot node - controls robot actions (Move, Rotate...)',
+    license='Free to use :)',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

@@ -6,6 +6,9 @@ import numpy as np
 from rclpy.node import Node
 from std_msgs.msg import String
 
+
+#TODO Create Logger 
+
 class Robot(Node):
     def __init__(self, pos, name="Isaac"):
         super().__init__(name)
@@ -28,14 +31,13 @@ class Robot(Node):
         ### Timers
         self.timer = self.create_timer(1, self.Search4World)
 
-    def PublishStrMsg(self, topic, _msg):
-        pub = self.create_publisher(String, topic, 10)
+    def PublishStrMsg(self, topic, _msg, f=10):
+        pub = self.create_publisher(String, topic, f)
         msg = String()
         msg.data = _msg
         pub.publish(msg)
         self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
         self.destroy_publisher(pub)
-    
     
     def Search4World(self):
         self.conn_req = self.create_publisher(String, "world_conn_req", 10)

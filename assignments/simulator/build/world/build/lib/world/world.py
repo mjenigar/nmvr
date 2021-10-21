@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import rclpy
@@ -5,6 +6,8 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
+dir_ = os.path.abspath(os.getcwd())
+MAP_FILE = dir_ + "/src/world/resource/map/map.json"
 
 class World(Node):
     def __init__(self, file):
@@ -132,11 +135,6 @@ class World(Node):
 import os
 
 def main():
-    dir_ = os.path.abspath(os.getcwd())
-    MAP_FILE = dir_ + "/src/world/resource/map/map.json"
-    
-    print()
-
     rclpy.init()
 
     w = World(MAP_FILE)
