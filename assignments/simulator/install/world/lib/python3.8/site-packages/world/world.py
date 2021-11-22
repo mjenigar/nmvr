@@ -29,7 +29,11 @@ class World(Node):
         
         ### Timers
         self.try_open_sim = self.create_timer(1, self.StartSimulator)
-        
+        self.test_timer = self.create_timer(1, self.Test)
+    
+    def Test(self):
+        self.PublishStrMsg("test", "are you listening?")
+    
     def ReadMap(self, file):
         with open(file) as f:
             config = json.load(f)
@@ -48,7 +52,6 @@ class World(Node):
     def EncodeMap(self):
         code = ""
         for pos in self.world_map:
-            print(pos)
             code += str(pos["value"])
             
         return code

@@ -1,10 +1,10 @@
 Metadata-Version: 1.2
 Name: robot
-Version: 0.0.0
-Summary: TODO: Package description
+Version: 1.0.0
+Summary: Robot node - controls robot actions (Move, Rotate...)
 Home-page: UNKNOWN
-Maintainer: codeyu
+Maintainer: Martin Jenigar
 Maintainer-email: martin.jenigar@student.tuke.sk
-License: TODO: License declaration
+License: Free to use :)
 Description: UNKNOWN
 Platform: UNKNOWN

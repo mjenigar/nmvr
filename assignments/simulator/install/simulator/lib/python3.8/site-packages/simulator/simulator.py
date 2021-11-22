@@ -15,10 +15,12 @@ from std_msgs.msg import String
 #TODO https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
 
-class Simulator(Node, tk.Tk):
+class Simulator(Node, threading.Thread):
     def __init__(self, *args, **kwargs):
         super().__init__("Simulator")
-        tk.Tk.__init__(self, *args, **kwargs)
+        # tk.Tk.__init__(self, *args, **kwargs)
+        threading.Thread.__init__(self)
+
         self.robots = []
         self.active_robot = None
         self.map_size = {}
@@ -32,45 +34,73 @@ class Simulator(Node, tk.Tk):
         self.robot_flag = False
         
         ### Listeners
-        self.listener_thread = threading.Thread(target=self.StartListening)        
         self.map_cfg_listener = self.create_subscription(String, "map_cfg", self.HandleMapCfg, 10)
         self.map_listener = self.create_subscription(String, "map", self.HandleMap, 10)
         self.robot_pos_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
         self.robot_pos_update_listener = self.create_subscription(String, "robot_pos_update", self.UpdatePosition, 10)
+        self.test_sub = self.create_subscription(String, "test", self.HandleTest, 10)
         
         ### Tasks
         self.init = Future()   
+        self.exit = Future()
         
         ### Timers
         self.init_timer = self.create_timer(1, self.InitSimulator)
 
         ### TMP
         self.velocity = np.array([1, 0])
+    
+    def HandleTest(self, msg):
+        self.get_logger().info("I got: {}".format(msg.data))
+    
+    def CloseApp(self):
+        self.root.destroy()
+        self.exit.set_result("exit")
+        self.destroy_node()
+    
+    def run(self):
+        self.get_logger().info("Starting simulator ...")
+        self.init.set_result("OK")
+        self.init_timer.destroy()
         
+        self.root = tk.Tk()
+        self.root.protocol("WM_DELETE_WINDOW", self.CloseApp)
+        
+        self.canvas = tk.Canvas(self.root, 
+                                width=self.map_size["w"],
+                                height=self.map_size["h"],
+                                borderwidth=0,
+                                highlightthickness=0)
+        self.canvas.pack(side="top", fill="both", expand="true")
+        
+        ### Mouse events
+        self.canvas.bind('<Button-1>', self.LeftClick)
+        self.canvas.bind('<Button-2>', self.MiddleClick)
+        self.canvas.bind('<Button-3>', self.RightClick)
+        
+        ### Controls events
+        self.root.bind('<Left>', self.Left)           
+        self.root.bind('<Right>', self.Right)           
+        self.root.bind('<Up>', self.Up)           
+        self.root.bind('<Down>', self.Down)     
+
+        self.DrawMap()
+        
+        pub = self.create_publisher(String, "sim_opened", 10)
+        msg = String()
+        msg.data = "sim_ok"
+        pub.publish(msg)
+        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
+        self.destroy_publisher(pub)
+        
+        self.active_robot = self.robots[0]
+        self.root.mainloop()        
+
     def InitSimulator(self):
         if self.map_cfg_flag and self.map_flag and self.robot_flag:
-            self.get_logger().info("Starting simulator ...")
-            self.DrawMap()        
-            self.init.set_result("OK")
-            self.init_timer.destroy()
-            self.listener_thread.start()
-            
-            pub = self.create_publisher(String, "sim_opened", 10)
-            msg = String()
-            msg.data = "sim_ok"
-            pub.publish(msg)
-            self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
-            self.destroy_publisher(pub)
-            
-            self.active_robot = self.robots[0]
-            self.mainloop()
+            self.start()
         else:
             self.get_logger().info("Waiting for data ...")
-    
-    ### LISTENER HANDLERS
-    def StartListening(self):
-        print("Listening started ... ")
-        rclpy.spin(self)
     
     def HandleMapCfg(self, msg):
         s = msg.data.split("/")
@@ -78,24 +108,6 @@ class Simulator(Node, tk.Tk):
         self.map_size["w"] = int(s[0].split("x")[0])
         self.map_size["h"] = int(s[0].split("x")[1])
         
-        self.canvas = tk.Canvas(self, 
-                                width=self.map_size["w"],
-                                height=self.map_size["h"],
-                                borderwidth=0,
-                                highlightthickness=0)
-        self.canvas.pack(side="top", fill="both", expand="true")
-
-        ### Mouse events
-        self.canvas.bind('<Button-1>', self.LeftClick)
-        self.canvas.bind('<Button-2>', self.MiddleClick)
-        self.canvas.bind('<Button-3>', self.RightClick)
-        
-        ### Controls events
-        self.bind('<Left>', self.Left)           
-        self.bind('<Right>', self.Right)           
-        self.bind('<Up>', self.Up)           
-        self.bind('<Down>', self.Down)           
-                
         self.n_cells = int(self.map_size["w"]/self.cell_size)
         self.map_cfg_flag = True
         self.get_logger().info("I got: {}".format(msg.data))
@@ -249,15 +261,16 @@ class Simulator(Node, tk.Tk):
                 robot["y"] = float(raw[1].split("-")[1])
 
                 self.canvas.move(robot["item"], robot["x"], robot["y"])
-            
 
 def main():
     rclpy.init()
-    l = Simulator()
-    # l.listener_thread.start()
-    rclpy.spin_until_future_complete(l, l.init)
+    app = Simulator()
+    rclpy.spin_until_future_complete(app, app.init)
+    rclpy.spin_until_future_complete(app, app.exit)
+    app.join()
     
-    l.destroy_node()
+    
+    # app.destroy_node()
     rclpy.shutdown()
 
 
