@@ -17,9 +17,11 @@ class Robot(Node):
         
         ######
         ### Status
+        self.status = "Searching for connection"
         self.pos = np.array(pos)
         self.velocity = np.array([0.01, 0])
         self.connected = False
+        self.change = True
         
         ### Listeners
         self.world_conn_listener = self.create_subscription(String, "world_connection", self.Connect2World, 10)
@@ -30,13 +32,21 @@ class Robot(Node):
 
         ### Timers
         self.search4world = self.create_timer(1, self.Search4World)
+        self.robot_status = self.create_timer(1, self.GetStatus)
 
-    def PublishStrMsg(self, topic, _msg, f=10):
-        pub = self.create_publisher(String, topic, f)
+    def GetStatus(self):
+        if self.change:
+            self.get_logger().info("STATUS: {} CONN: {} POS: {} ".format(self.status, self.connected, self.pos))
+            self.change = False
+
+    def PublishStrMsg(self, topic, _msg, log=True):
+        pub = self.create_publisher(String, topic, 10)
         msg = String()
         msg.data = _msg
         pub.publish(msg)
-        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
+        if log:
+            self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
+        
         self.destroy_publisher(pub)
     
     def Search4World(self):
@@ -44,16 +54,18 @@ class Robot(Node):
         msg = String()
         msg.data = "{}_{}-{}".format(self.name, self.pos[0], self.pos[1])
         self.conn_req.publish(msg)
-        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
+        # self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
         # self.destroy_publisher(self.conn_req)
     
     def Connect2World(self, msg):
         self.connected = True
+        self.change = True
+        self.status = "waiting for spawn"
         self.search4world.destroy()
         print("Connected...")
         
     def ResponsePing(self, msg):
-        self.PublishStrMsg("ping_response", "robot_{}_{}".format(self.name, self.connected))
+        self.PublishStrMsg("ping_response", "robot_{}".format(self.name, self.connected), False)
 
     # def Spawn(self, canvas, pos):
     #     size = self.Coord2Size(pos)
@@ -83,10 +95,10 @@ class Robot(Node):
 def main():
     rclpy.init()
 
-    isaac = Robot([1,0])
-    rclpy.spin(isaac)
+    robot = Robot([1,0])
+    rclpy.spin(robot)
     
-    isaac.destroy_node()
+    robot.destroy_node()
     rclpy.shutdown()
 
 

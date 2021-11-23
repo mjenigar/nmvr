@@ -38,6 +38,8 @@ class World(Node):
         
         
         ### Listeners
+        # Robot
+        # self.disconnect_listen = self.create_subscription(String, "disconnect", self.DisconnectRobot, 10)
         # Init
         self.Search4Robot = self.create_subscription(String, "connection_req", self.ConnectRobot, 10)
         self.sim_listener = self.create_subscription(String, "sim_opened", self.HandleInitSimResponse, 10)
@@ -130,6 +132,17 @@ class World(Node):
             code += str(pos["value"])
             
         return code
+    
+    # def DisconnectRobot(self, msg):
+    #     robot = msg.data.split("_")[1]
+    #     for robot_ in self.available_robots:
+    #         if robot == robot_["name"]:
+    #             self.available_robots.remove(robot)
+    #             self.get_logger().info("{} disconnected".format(robot))
+    #             self.change = True
+
+    
+    
     
     def GetRobotPos(self):
         _str = ""
