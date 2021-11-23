@@ -34,11 +34,14 @@ class Simulator(Node, threading.Thread):
         self.robot_flag = False
         
         ### Listeners
+        # Init
         self.map_cfg_listener = self.create_subscription(String, "map_cfg", self.HandleMapCfg, 10)
         self.map_listener = self.create_subscription(String, "map", self.HandleMap, 10)
         self.robot_pos_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
+        
+        # Events
+        self.map_update_listener = self.create_subscription(String, "map_upd", self.UpdateMap, 10)
         self.robot_pos_update_listener = self.create_subscription(String, "robot_pos_update", self.UpdatePosition, 10)
-        self.test_sub = self.create_subscription(String, "test", self.HandleTest, 10)
         
         ### Tasks
         self.init = Future()   
@@ -49,9 +52,6 @@ class Simulator(Node, threading.Thread):
 
         ### TMP
         self.velocity = np.array([1, 0])
-    
-    def HandleTest(self, msg):
-        self.get_logger().info("I got: {}".format(msg.data))
     
     def CloseApp(self):
         self.root.destroy()
@@ -156,13 +156,13 @@ class Simulator(Node, threading.Thread):
         self.get_logger().info("{} [{} Bytes] --> {}".format(topic, sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
         self.destroy_publisher(pub)
     
-    def PublishMapUpdate(self):
-        msg = String()
-        self.pub = self.create_publisher(String, "map_upd", 10)
-        msg.data = self.bit_map
-        self.pub.publish(msg)
-        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
-        self.destroy_publisher(self.pub)
+    # def PublishMapUpdate(self):
+    #     msg = String()
+    #     self.pub = self.create_publisher(String, "map_upd", 10)
+    #     msg.data = self.bit_map
+    #     self.pub.publish(msg)
+    #     self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
+    #     self.destroy_publisher(self.pub)
         
     def GetMapMatrix(self):
         x = 0
@@ -182,7 +182,6 @@ class Simulator(Node, threading.Thread):
     
     def DrawMap(self):
         self.GetMapMatrix()
-        
         for x in range(len(self.map_matrix)):
             for y in range(len(self.map_matrix[x])):
                 x1 = x * self.cell_size
@@ -210,17 +209,15 @@ class Simulator(Node, threading.Thread):
         x = math.floor(event.x / self.cell_size)
         y = math.floor(event.y / self.cell_size)
         print("clicked at x: {} y: {}".format(x, y))
-        self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
-        tmp = list(self.map_matrix[x])
-        tmp[y] = '1'
-        print(tmp)
+        # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
+        self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y))
+        # tmp = list(self.map_matrix[x])
+        # tmp[y] = '1'
         
-        self.map_matrix[x] = ''.join(tmp)
-        self.Matrix2Bin()
-        self.PublishMapUpdate()        
-        
-        print(self.map_matrix)
-        
+        # self.map_matrix[x] = ''.join(tmp)
+        # print(self.map_matrix)
+        # self.Matrix2Bin()
+        # self.PublishMapUpdate()        
     
     def MiddleClick(self, event):
         #TODO bind mouse event        
@@ -262,13 +259,20 @@ class Simulator(Node, threading.Thread):
 
                 self.canvas.move(robot["item"], robot["x"], robot["y"])
 
+    def UpdateMap(self, msg):
+        self.get_logger().info("I got: {}".format(msg.data[0:25]))
+        self.bit_map = msg.data
+        print(self.bit_map)
+        # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
+
+        self.get_logger().info("Map updated")
+        
+    
 def main():
     rclpy.init()
     app = Simulator()
     rclpy.spin_until_future_complete(app, app.init)
     rclpy.spin_until_future_complete(app, app.exit)
-    app.join()
-    
     
     # app.destroy_node()
     rclpy.shutdown()

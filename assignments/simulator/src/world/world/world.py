@@ -15,25 +15,100 @@ class World(Node):
         self.world_config = self.ReadMap(file)
         self.world_map = self.world_config["map"]
         self.msg = String()
+
+        ######
+        ### Status
+        self.status = "wait"
+        self.available_robots = []
+        self.simulator = "disconnected"
+        self.change = True
+
+        self.WorldStatus = self.create_timer(1, self.GetStatus)
+        ######
+        
+        ######
+        ### Ping
+        self.robots_responds = []
+        self.connected_simulator = 0 
+        # pub
+        self.ping = self.create_timer(10, self.PingAll)
+        # sub
+        self.robots_status = self.create_subscription(String, "ping_response", self.PingResponse, 10)
+        ######
+        
         
         ### Listeners
-        self.world_listener = self.create_subscription(String, "map_upd", self.UpdateMap, 10)
-        self.robot_listener = self.create_subscription(String, "world_conn_req", self.ConnectRobot, 10)
+        # Init
+        self.Search4Robot = self.create_subscription(String, "connection_req", self.ConnectRobot, 10)
         self.sim_listener = self.create_subscription(String, "sim_opened", self.HandleInitSimResponse, 10)
-        self.move_forward_listener = self.create_subscription(String, "move_forward", self.HandleForward, 10)
-        self.move_backward_listener = self.create_subscription(String, "move_forward", self.HandleBackward, 10)
-        self.update_robot_pos_listener = self.create_subscription(String, "robot_upd", self.UpdateRobotPos, 10)
+
+        # StatusCheck
         
-        ### Connected Robots pos
-        self.available_robots = []
+        # Events
+        self.map_listener = self.create_subscription(String, "map_update_coord", self.UpdateMap, 10)
+        # self.move_forward_listener = self.create_subscription(String, "move_forward", self.HandleForward, 10)
+        # self.move_backward_listener = self.create_subscription(String, "move_forward", self.HandleBackward, 10)
+        # self.update_robot_pos_listener = self.create_subscription(String, "robot_upd", self.UpdateRobotPos, 10)
         
         ### Timers
-        self.try_open_sim = self.create_timer(1, self.StartSimulator)
-        self.test_timer = self.create_timer(1, self.Test)
+        # self.try_open_sim = self.create_timer(1, self.StartSimulator)
     
-    def Test(self):
-        self.PublishStrMsg("test", "are you listening?")
+    def ConnectRobot(self, msg):
+        data = msg.data.split("_")
+        robot_name = data[0]
+        pos = data[1].split("-")
+        robot = {
+            "name" : robot_name,
+            "x": int(pos[0]),
+            "y": int(pos[1])
+        }
+        self.available_robots.append(robot)        
+        self.PublishStrMsg("world_connection", "true")
+        self.change = True
+        
+        self.get_logger().info("{} connected".format(robot_name))
+
+    def GetStatus(self):
+        if self.change:
+            self.get_logger().info("STATUS: {} ROBOTS: {} SIMULATOR: {}".format(self.status, len(self.available_robots), self.simulator))
+            self.change = False
     
+    def isSimulatorOpened(self):
+        return True if (self.simulator != None) else False
+    
+    def PingAll(self):
+        if len(self.available_robots) > 0 or self.simulator != "disconnected":
+            self.PublishStrMsg("world_ping", "HEY!", False)
+            self.wait4resp = self.create_timer(1, self.Check4PingResponse)
+    
+    def Check4PingResponse(self):
+        if len(self.robots_responds) != len(self.available_robots):
+            for robot in self.available_robots:
+                delete = True
+                for _robot in self.robots_responds:
+                    if(robot["name"] == _robot):
+                        delete = False
+                        break
+
+                if delete:
+                    self.available_robots.remove(robot)
+                    self.get_logger().info("{} disconnected".format(robot["name"]) )
+                    self.change = True
+                    self.delete = False
+                        
+        self.robots_responds = []
+        self.connected_simulator = 0
+        self.wait4resp.destroy()
+    
+    def PingResponse(self, msg):
+        resp_from = msg.data.split("_")[0]
+        if resp_from == "robot":
+            name = msg.data.split("_")[1]
+            # self.get_logger().info("{} alive".format(name))
+            self.robots_responds.append(name)
+        elif resp_from == "simulator":
+            self.connected_simulator += 1
+                
     def ReadMap(self, file):
         with open(file) as f:
             config = json.load(f)
@@ -68,43 +143,39 @@ class World(Node):
         
         return _str
     
-    def PublishStrMsg(self, topic, msg):
+    def PublishStrMsg(self, topic, msg, log=True):
         self.pub = self.create_publisher(String, topic, 10)
         self.msg.data = msg
         self.pub.publish(self.msg)
-        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(self.msg.data), self.msg.data[0:25] if len(self.msg.data) > 25 else self.msg.data))
+        if log:
+            self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(self.msg.data), self.msg.data[0:25] if len(self.msg.data) > 25 else self.msg.data))
         self.destroy_publisher(self.pub)
         
     def UpdateMap(self, msg):
-        self.get_logger().info("I got: {}".format(msg.data[0:25]))
-        for i, cell in enumerate(self.world_map):
-            cell["value"] = msg.data[i]
+        self.get_logger().info("I got: {}".format(msg.data))
+        print(msg.data.split("_"))
+        x = msg.data.split("_")[0]
+        y = msg.data.split("_")[1]
+        
+        for i in range(len(self.world_map)):
+            if self.world_map[i]["x"] == int(x) and self.world_map[i]["y"] == int(y):
+                self.world_map[i]["value"] = 1 if self.world_map[i]["value"] == 0 else 0 
+                break            
+        
         self.world_config["map"] = self.world_map
         
         with open(MAP_FILE, 'w') as f:
             f.write(json.dumps(self.world_config, ensure_ascii=False, indent=4))        
         self.get_logger().info("Map updated")
-
-    def ConnectRobot(self, msg):
-        data = msg.data.split("_")
-        robot_name = data[0]
-        pos = data[1].split("-")
-        robot = {
-            "name" : robot_name,
-            "x": int(pos[0]),
-            "y": int(pos[1])
-        }
-        
-        self.available_robots.append(robot)        
-        self.PublishStrMsg("world_connection", "true")
+        self.PublishStrMsg("map_upd", self.EncodeMap())
         
     def StartSimulator(self):
         if len(self.available_robots) > 0:
             self.PublishStrMsg("map_cfg", self.GetMapCfg())
             self.PublishStrMsg("map", self.EncodeMap())
             self.PublishStrMsg("robots", self.GetRobotPos())
-        else:
-            self.get_logger().info("Waiting for robot req ...")
+        # else:
+        #     self.get_logger().info("Waiting for robot to join ...")
     
     def HandleInitSimResponse(self, msg):
         self.try_open_sim.destroy()
@@ -134,8 +205,6 @@ class World(Node):
                 
         self.PublishStrMsg("robot_pos_update", msg.data)
         
-
-import os
 
 def main():
     rclpy.init()

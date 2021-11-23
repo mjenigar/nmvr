@@ -1,11 +1,14 @@
-import numpy as np
+import os
 import json
+import numpy as np
 
 class MapGenerator():
     def __init__(self, robot_start_pos, map_size, cell_size):
         self.robot_start_pos = robot_start_pos
         self.map_size = map_size
         self.cell_size = cell_size
+        self.dir_ = os.path.abspath(os.getcwd())
+        self.MAP_FILE = self.dir_ + "/map.json"
         
         self.json = {}
         
@@ -24,11 +27,11 @@ class MapGenerator():
         
         self.json["map"] = cells
         
-        with open('map/map.json', 'w') as f:
+        with open(self.MAP_FILE, 'w') as f:
             f.write(json.dumps(self.json, ensure_ascii=False, indent=4))
         
         print("New random map was generated...")
         
 
-m = MapGenerator((0,0), 1000, 50)
+m = MapGenerator((0,0), 3000, 5)
 m.GenerateMap()
