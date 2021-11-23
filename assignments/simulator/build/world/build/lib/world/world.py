@@ -42,7 +42,7 @@ class World(Node):
         # self.disconnect_listen = self.create_subscription(String, "disconnect", self.DisconnectRobot, 10)
         # Init
         self.Search4Robot = self.create_subscription(String, "connection_req", self.ConnectRobot, 10)
-        self.sim_listener = self.create_subscription(String, "sim_opened", self.HandleInitSimResponse, 10)
+        self.sim_listener = self.create_subscription(String, "sim_connected", self.HandleInitSimResponse, 10)
 
         # StatusCheck
         
@@ -53,7 +53,7 @@ class World(Node):
         # self.update_robot_pos_listener = self.create_subscription(String, "robot_upd", self.UpdateRobotPos, 10)
         
         ### Timers
-        # self.try_open_sim = self.create_timer(1, self.StartSimulator)
+        self.try_open_sim = self.create_timer(1, self.StartSimulator)
     
     def ConnectRobot(self, msg):
         data = msg.data.split("_")
@@ -64,11 +64,17 @@ class World(Node):
             "x": int(pos[0]),
             "y": int(pos[1])
         }
-        self.available_robots.append(robot)        
-        self.PublishStrMsg("world_connection", "true")
-        self.change = True
         
-        self.get_logger().info("{} connected".format(robot_name))
+        if robot_name in [robot_["name"] for robot_ in self.available_robots]:
+            response = "false_Robot with this name is already connected...".format(robot_name)        
+        else:
+            response = "true"
+            self.available_robots.append(robot)        
+            self.change = True
+            self.get_logger().info("{} connected".format(robot_name))
+
+        self.PublishStrMsg("world_connection", response)
+        
 
     def GetStatus(self):
         if self.change:
@@ -97,6 +103,11 @@ class World(Node):
                     self.get_logger().info("{} disconnected".format(robot["name"]) )
                     self.change = True
                     self.delete = False
+                    
+        if self.connected_simulator != 1:
+            self.simulator = "disconnected"
+            self.change = True
+            
                         
         self.robots_responds = []
         self.connected_simulator = 0
@@ -142,8 +153,6 @@ class World(Node):
     #             self.change = True
 
     
-    
-    
     def GetRobotPos(self):
         _str = ""
         for i, robot in enumerate(self.available_robots):    
@@ -155,14 +164,6 @@ class World(Node):
             _str += "" if i == len(self.available_robots) - 1 else ","
         
         return _str
-    
-    def PublishStrMsg(self, topic, msg, log=True):
-        self.pub = self.create_publisher(String, topic, 10)
-        self.msg.data = msg
-        self.pub.publish(self.msg)
-        if log:
-            self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(self.msg.data), self.msg.data[0:25] if len(self.msg.data) > 25 else self.msg.data))
-        self.destroy_publisher(self.pub)
         
     def UpdateMap(self, msg):
         self.get_logger().info("I got: {}".format(msg.data))
@@ -184,16 +185,16 @@ class World(Node):
         
     def StartSimulator(self):
         if len(self.available_robots) > 0:
-            self.PublishStrMsg("map_cfg", self.GetMapCfg())
-            self.PublishStrMsg("map", self.EncodeMap())
-            self.PublishStrMsg("robots", self.GetRobotPos())
-        # else:
-        #     self.get_logger().info("Waiting for robot to join ...")
-    
+            self.PublishStrMsg("map_cfg", self.GetMapCfg(), False)
+            self.PublishStrMsg("map", self.EncodeMap(), False)
+            self.PublishStrMsg("robots", self.GetRobotPos(), False)
+        
     def HandleInitSimResponse(self, msg):
         self.try_open_sim.destroy()
-        # self.sim_listener.destroy_subscription()
-        self.get_logger().info("Simulator running ...")
+        self.destroy_subscription(self.sim_listener)
+        self.simulator = "connected"
+        self.status = "idle"
+        self.change = True
 
     def HandleForward(self, msg):
         self.get_logger().info("{}".format(msg.data))
@@ -218,6 +219,14 @@ class World(Node):
                 
         self.PublishStrMsg("robot_pos_update", msg.data)
         
+
+    def PublishStrMsg(self, topic, msg, log=True):
+        self.pub = self.create_publisher(String, topic, 10)
+        self.msg.data = msg
+        self.pub.publish(self.msg)
+        if log:
+            self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(self.msg.data), self.msg.data[0:25] if len(self.msg.data) > 25 else self.msg.data))
+        self.destroy_publisher(self.pub)
 
 def main():
     rclpy.init()

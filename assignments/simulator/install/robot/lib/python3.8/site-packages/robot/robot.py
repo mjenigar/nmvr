@@ -58,11 +58,16 @@ class Robot(Node):
         # self.destroy_publisher(self.conn_req)
     
     def Connect2World(self, msg):
-        self.connected = True
-        self.change = True
-        self.status = "waiting for spawn"
-        self.search4world.destroy()
-        print("Connected...")
+        response = msg.data.split("_")[0]
+        if response == "true":
+            self.connected = True
+            self.change = True
+            self.status = "waiting for spawn"
+            self.search4world.destroy()
+            self.get_logger().info("CONNECTED!")
+        else:
+            self.get_logger().info("CONNECTION REFUSED!: {} REASON: {}".format(response, msg.data.split("_")[1]))
+
         
     def ResponsePing(self, msg):
         self.PublishStrMsg("ping_response", "robot_{}".format(self.name, self.connected), False)

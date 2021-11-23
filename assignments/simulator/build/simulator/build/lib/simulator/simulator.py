@@ -21,13 +21,23 @@ class Simulator(Node, threading.Thread):
         # tk.Tk.__init__(self, *args, **kwargs)
         threading.Thread.__init__(self)
 
-        self.robots = []
-        self.active_robot = None
+        ######
+        ### Map
         self.map_size = {}
         self.cell_size = None
         self.bit_map = None
         self.cells = {}
+        ######
+
+        ######
+        ### Status
+        self.status = "Searching for connection"        
+        self.robots = []
+        self.active_robot = None
+        self.change = True       
+        ######
         
+                
         ### Flags
         self.map_cfg_flag = False
         self.map_flag = False
@@ -40,6 +50,8 @@ class Simulator(Node, threading.Thread):
         self.robot_pos_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
         
         # Events
+        self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
+
         self.map_update_listener = self.create_subscription(String, "map_upd", self.UpdateMap, 10)
         self.robot_pos_update_listener = self.create_subscription(String, "robot_pos_update", self.UpdatePosition, 10)
         
@@ -49,9 +61,25 @@ class Simulator(Node, threading.Thread):
         
         ### Timers
         self.init_timer = self.create_timer(1, self.InitSimulator)
+        self.status_timer = self.create_timer(1, self.GetStatus)
 
         ### TMP
         self.velocity = np.array([1, 0])
+    
+    def GetStatus(self):
+        if self.change:
+            if len(self.robots) > 0:
+                robots = ""
+                for r in self.robots:
+                    robots += r["name"] + " "
+            else:
+                robots = "None"
+            
+            self.get_logger().info("STATUS: {} ROBOTS: {} ACTIVE: {}".format(self.status, robots, self.active_robot))
+            self.change = False
+    
+    def ResponsePing(self, msg):
+        self.PublishStringMsg("ping_response", "simulator_ok")
     
     def CloseApp(self):
         self.root.destroy()
@@ -86,12 +114,13 @@ class Simulator(Node, threading.Thread):
 
         self.DrawMap()
         
-        pub = self.create_publisher(String, "sim_opened", 10)
+        pub = self.create_publisher(String, "sim_connected", 10)
         msg = String()
         msg.data = "sim_ok"
         pub.publish(msg)
         self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data))
         self.destroy_publisher(pub)
+        self.init_timer.destroy()
         
         self.active_robot = self.robots[0]
         self.root.mainloop()        
@@ -99,8 +128,8 @@ class Simulator(Node, threading.Thread):
     def InitSimulator(self):
         if self.map_cfg_flag and self.map_flag and self.robot_flag:
             self.start()
-        else:
-            self.get_logger().info("Waiting for data ...")
+        # else:
+        #     self.get_logger().info("Waiting for data ...")
     
     def HandleMapCfg(self, msg):
         s = msg.data.split("/")
@@ -110,14 +139,16 @@ class Simulator(Node, threading.Thread):
         
         self.n_cells = int(self.map_size["w"]/self.cell_size)
         self.map_cfg_flag = True
-        self.get_logger().info("I got: {}".format(msg.data))
-        self.get_logger().info("Map Config - OK")
+        if not self.map_cfg_flag:
+            self.get_logger().info("I got: {}".format(msg.data))
+            self.get_logger().info("Map Config - OK")
         
     def HandleMap(self, msg):
-        self.get_logger().info("I got: {}".format(msg.data[0:25]))
         self.bit_map = msg.data
         self.map_flag = True
-        self.get_logger().info("Map - OK")
+        if not self.map_flag:
+            self.get_logger().info("I got: {}".format(msg.data[0:25]))
+            self.get_logger().info("Map - OK")
 
     def HandleRobots(self, msg):
         avail_robots = msg.data.split(",")
@@ -142,18 +173,20 @@ class Simulator(Node, threading.Thread):
                 
         if len(self.robots) > 0:
             self.robot_flag = True
+        
+        if not self.robot_flag:            
+            self.get_logger().info("I got: {}".format(msg))
             self.get_logger().info("Robots - OK")
 
-        self.get_logger().info("I got: {}".format(msg))
-        
         
     ### PUBLISHER HANDLERS
-    def PublishStringMsg(self, topic, msg_):
+    def PublishStringMsg(self, topic, msg_, log=True):
         msg = String()
         pub = self.create_publisher(String, topic, 10)
         msg.data = msg_
         pub.publish(msg)
-        self.get_logger().info("{} [{} Bytes] --> {}".format(topic, sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
+        if log:
+            self.get_logger().info("{} [{} Bytes] --> {}".format(topic, sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
         self.destroy_publisher(pub)
     
     # def PublishMapUpdate(self):
