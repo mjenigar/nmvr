@@ -33,5 +33,5 @@ class MapGenerator():
         print("New random map was generated...")
         
 
-m = MapGenerator((0,0), 3000, 5)
+m = MapGenerator((0,0), 1000, 25)
 m.GenerateMap()

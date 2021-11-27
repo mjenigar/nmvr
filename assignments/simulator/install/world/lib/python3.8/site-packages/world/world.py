@@ -30,12 +30,10 @@ class World(Node):
         ### Ping
         self.robots_responds = []
         self.connected_simulator = 0 
-        # pub
+        # pub & sub
         self.ping = self.create_timer(10, self.PingAll)
-        # sub
         self.robots_status = self.create_subscription(String, "ping_response", self.PingResponse, 10)
         ######
-        
         
         ### Listeners
         # Robot
@@ -44,8 +42,6 @@ class World(Node):
         self.Search4Robot = self.create_subscription(String, "connection_req", self.ConnectRobot, 10)
         self.sim_listener = self.create_subscription(String, "sim_connected", self.HandleInitSimResponse, 10)
 
-        # StatusCheck
-        
         # Events
         self.map_listener = self.create_subscription(String, "map_update_coord", self.UpdateMap, 10)
         # self.move_forward_listener = self.create_subscription(String, "move_forward", self.HandleForward, 10)
@@ -61,8 +57,8 @@ class World(Node):
         pos = data[1].split("-")
         robot = {
             "name" : robot_name,
-            "x": int(pos[0]),
-            "y": int(pos[1])
+            "x": float(pos[0]),
+            "y": float(pos[1])
         }
         
         if robot_name in [robot_["name"] for robot_ in self.available_robots]:
@@ -75,7 +71,6 @@ class World(Node):
 
         self.PublishStrMsg("world_connection", response)
         
-
     def GetStatus(self):
         if self.change:
             self.get_logger().info("STATUS: {} ROBOTS: {} SIMULATOR: {}".format(self.status, len(self.available_robots), self.simulator))
@@ -85,7 +80,7 @@ class World(Node):
         return True if (self.simulator != None) else False
     
     def PingAll(self):
-        if len(self.available_robots) > 0 or self.simulator != "disconnected":
+        if len(self.available_robots) > 0 and self.simulator != "disconnected":
             self.PublishStrMsg("world_ping", "HEY!", False)
             self.wait4resp = self.create_timer(1, self.Check4PingResponse)
     
@@ -106,6 +101,7 @@ class World(Node):
                     
         if self.connected_simulator != 1:
             self.simulator = "disconnected"
+            self.try_open_sim = self.create_timer(1, self.StartSimulator)
             self.change = True
             
                         
@@ -191,7 +187,7 @@ class World(Node):
         
     def HandleInitSimResponse(self, msg):
         self.try_open_sim.destroy()
-        self.destroy_subscription(self.sim_listener)
+        # self.destroy_subscription(self.sim_listener)
         self.simulator = "connected"
         self.status = "idle"
         self.change = True

@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import math
@@ -37,7 +38,6 @@ class Simulator(Node, threading.Thread):
         self.change = True       
         ######
         
-                
         ### Flags
         self.map_cfg_flag = False
         self.map_flag = False
@@ -79,17 +79,20 @@ class Simulator(Node, threading.Thread):
             self.change = False
     
     def ResponsePing(self, msg):
-        self.PublishStringMsg("ping_response", "simulator_ok")
+        self.PublishStringMsg("ping_response", "simulator_ok", False)
     
     def CloseApp(self):
         self.root.destroy()
         self.exit.set_result("exit")
         self.destroy_node()
+        rclpy.shutdown()
     
     def run(self):
         self.get_logger().info("Starting simulator ...")
         self.init.set_result("OK")
         self.init_timer.destroy()
+        self.status = "idle"
+        self.change = True
         
         self.root = tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.CloseApp)
@@ -122,14 +125,12 @@ class Simulator(Node, threading.Thread):
         self.destroy_publisher(pub)
         self.init_timer.destroy()
         
-        self.active_robot = self.robots[0]
+        self.active_robot = self.robots[0]["name"]
         self.root.mainloop()        
 
     def InitSimulator(self):
         if self.map_cfg_flag and self.map_flag and self.robot_flag:
             self.start()
-        # else:
-        #     self.get_logger().info("Waiting for data ...")
     
     def HandleMapCfg(self, msg):
         s = msg.data.split("/")
@@ -157,8 +158,8 @@ class Simulator(Node, threading.Thread):
             newborn = {
                 "name": robot_data[0],
                 "size": 12,
-                "x": int(robot_data[1].split("-")[0]),
-                "y": int(robot_data[1].split("-")[1]),
+                "x": float(robot_data[1].split("-")[0]),
+                "y": float(robot_data[1].split("-")[1]),
                 "item" : None
             }
             
@@ -235,7 +236,12 @@ class Simulator(Node, threading.Thread):
                         end_y = start_y + robot["size"]
                         
                         robot["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
+                        # dir_ = os.path.abspath(os.getcwd())
+                        # MAP_FILE = dir_ + "/src/simulator/resource/assets/car1.png"
+                        # robot_png = tk.PhotoImage(file = MAP_FILE)
+                        # self.canvas.create_image(0,0, image=robot_png)
                         self.canvas.tag_raise(robot["item"])
+                        # self.canvas.tag_raise(robot_png)
     
     ### EVENT CONTROLS
     def LeftClick(self, event):
@@ -308,7 +314,7 @@ def main():
     rclpy.spin_until_future_complete(app, app.exit)
     
     # app.destroy_node()
-    rclpy.shutdown()
+    # rclpy.shutdown()
 
 
 if __name__ == '__main__':
