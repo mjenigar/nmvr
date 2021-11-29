@@ -10,6 +10,10 @@ import rclpy
 from rclpy.node import Node
 from rclpy.task import Future
 from std_msgs.msg import String
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Pose
+
+from PIL import Image, ImageTk
 
 #TODO create logs
 #TODO create edit mode
@@ -22,6 +26,8 @@ class Simulator(Node, threading.Thread):
         # tk.Tk.__init__(self, *args, **kwargs)
         threading.Thread.__init__(self)
 
+        self.__init = False
+        
         ######
         ### Map
         self.map_size = {}
@@ -37,7 +43,6 @@ class Simulator(Node, threading.Thread):
         self.active_robot = None
         self.change = True       
         ######
-        
         ### Flags
         self.map_cfg_flag = False
         self.map_flag = False
@@ -47,13 +52,11 @@ class Simulator(Node, threading.Thread):
         # Init
         self.map_cfg_listener = self.create_subscription(String, "map_cfg", self.HandleMapCfg, 10)
         self.map_listener = self.create_subscription(String, "map", self.HandleMap, 10)
-        self.robot_pos_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
-        
+        self.robot_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
+        self.robot_move_listener = self.create_subscription(Pose, "current_pose", self.HandleMove, 10)
         # Events
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
-
         self.map_update_listener = self.create_subscription(String, "map_upd", self.UpdateMap, 10)
-        self.robot_pos_update_listener = self.create_subscription(String, "robot_pos_update", self.UpdatePosition, 10)
         
         ### Tasks
         self.init = Future()   
@@ -126,6 +129,7 @@ class Simulator(Node, threading.Thread):
         self.init_timer.destroy()
         
         self.active_robot = self.robots[0]["name"]
+        self.__init = True
         self.root.mainloop()        
 
     def InitSimulator(self):
@@ -157,11 +161,12 @@ class Simulator(Node, threading.Thread):
             robot_data = robot.split("_")
             newborn = {
                 "name": robot_data[0],
-                "size": 12,
-                "x": float(robot_data[1].split("-")[0]),
-                "y": float(robot_data[1].split("-")[1]),
+                "size": 32,
+                "wheel_r": 0.08,
+                "odo" : Odometry(),
                 "item" : None
             }
+            self.SetPose(newborn, robot_data[1].split("-"))
             
             if len(self.robots) > 0:
                 for other in self.robots:
@@ -179,7 +184,10 @@ class Simulator(Node, threading.Thread):
             self.get_logger().info("I got: {}".format(msg))
             self.get_logger().info("Robots - OK")
 
-        
+    def SetPose(self, robot, pose):
+        robot["odo"].pose.pose.position.x = float(pose[0])
+        robot["odo"].pose.pose.position.y = float(pose[1])
+    
     ### PUBLISHER HANDLERS
     def PublishStringMsg(self, topic, msg_, log=True):
         msg = String()
@@ -228,18 +236,20 @@ class Simulator(Node, threading.Thread):
                 self.cells[x, y] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, tags="cell")
                 self.canvas.tag_lower(self.cells[x, y])
                 for robot in self.robots:
-                    if robot["x"] == x and robot["y"] == y:
-                        start_x = robot["x"] * self.cell_size
+                    if robot["odo"].pose.pose.position.x == x and robot["odo"].pose.pose.position.y == y:
+                        start_x = robot["odo"].pose.pose.position.x * self.cell_size
                         end_x = start_x + robot["size"]
                         
-                        start_y = robot["y"] * self.cell_size
+                        start_y = robot["odo"].pose.pose.position.y * self.cell_size
                         end_y = start_y + robot["size"]
                         
                         robot["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
+                        
                         # dir_ = os.path.abspath(os.getcwd())
-                        # MAP_FILE = dir_ + "/src/simulator/resource/assets/car1.png"
-                        # robot_png = tk.PhotoImage(file = MAP_FILE)
-                        # self.canvas.create_image(0,0, image=robot_png)
+                        # MAP_FILE = dir_ + "/src/simulator/resource/assets/robot.png"
+                        # robot_png = ImageTk.PhotoImage(MAP_FILE)
+                        # robot["item"] = self.canvas.create_image(start_x,start_y, image=robot_png)
+                        
                         self.canvas.tag_raise(robot["item"])
                         # self.canvas.tag_raise(robot_png)
     
@@ -287,16 +297,16 @@ class Simulator(Node, threading.Thread):
         print("Rotating DOWN Current {}".format(self.velocity[1]))
 
     ### Move handlers
-    def UpdatePosition(self, msg):
-        self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
-        raw = msg.data.split("_")
-        robot2upd = raw[0]
-        for robot in self.robots:
-            if robot["name"] == robot2upd:
-                robot["x"] = float(raw[1].split("-")[0])
-                robot["y"] = float(raw[1].split("-")[1])
+    # def UpdatePosition(self, msg):
+    #     self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
+    #     raw = msg.data.split("_")
+    #     robot2upd = raw[0]
+    #     for robot in self.robots:
+    #         if robot["name"] == robot2upd:
+    #             robot["x"] = float(raw[1].split("-")[0])
+    #             robot["y"] = float(raw[1].split("-")[1])
 
-                self.canvas.move(robot["item"], robot["x"], robot["y"])
+    #             self.canvas.move(robot["item"], robot["x"], robot["y"])
 
     def UpdateMap(self, msg):
         self.get_logger().info("I got: {}".format(msg.data[0:25]))
@@ -305,7 +315,10 @@ class Simulator(Node, threading.Thread):
         # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
 
         self.get_logger().info("Map updated")
-        
+
+    def HandleMove(self, msg):
+        if self.__init:
+            self.canvas.move(self.robots[0]["item"], msg.position.x, msg.position.y)
     
 def main():
     rclpy.init()
