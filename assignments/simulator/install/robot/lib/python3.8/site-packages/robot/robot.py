@@ -38,7 +38,7 @@ class Robot(Node):
         ### Listeners
         self.world_conn_listener = self.create_subscription(String, "world_connection", self.Connect2World, 10)
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
-        # self.pose_listener = self.create_subscription(Pose, "robot_position", self.UpdatePose, 10)
+        self.respawn_listener = self.create_subscription(Pose, "robot_respawn", self.UpdatePose, 10)
         
         ### Timers
         self.search4world = self.create_timer(1, self.Search4World)
@@ -84,7 +84,7 @@ class Robot(Node):
             self.destroy_publisher(self.conn_req)
 
             # ### Move
-            self.Move2Goal()
+            # self.Move2Goal()
         else:
             self.get_logger().info("CONNECTION REFUSED!: {} REASON: {}".format(response, msg.data.split("_")[1]))
 
@@ -121,17 +121,9 @@ class Robot(Node):
             phi = (d_right - d_left) / self.baseline
             
             self.odo.twist.twist.linear.x = self.distance_PID.update(distance)
-            # if self.odo.twist.twist.linear.x > self.max_lin_vel:
-            #     self.odo.twist.twist.linear.x = self.max_lin_vel
-            # elif self.odo.twist.twist.linear.x < -self.max_lin_vel:
-            #     self.odo.twist.twist.linear.x = -self.max_lin_vel
             print("{} px/sec".format(self.odo.twist.twist.linear.x))
             
             self.odo.twist.twist.angular.z = self.angle_PID.update(self.steering_angle() - self.odo.pose.pose.orientation.z)
-            # if self.odo.twist.twist.angular.z > self.max_ang_vel:
-            #     self.odo.twist.twist.angular.z = self.max_ang_vel
-            # elif self.odo.twist.twist.angular.z < -self.max_ang_vel:
-            #     self.odo.twist.twist.angular.z = -self.max_ang_vel
             print("{} rad/sec".format(self.odo.twist.twist.angular.z))
             
             next_pose.position.x = self.odo.pose.pose.position.x + d_center*math.cos(self.odo.pose.pose.orientation.z)

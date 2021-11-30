@@ -2,11 +2,13 @@ import os
 import sys
 import json
 import math
+import rclpy
 import threading
 import tkinter as tk
 import numpy as np
 
-import rclpy
+from tkinter import *
+from tkinter import messagebox
 from rclpy.node import Node
 from rclpy.task import Future
 from std_msgs.msg import String
@@ -15,10 +17,14 @@ from geometry_msgs.msg import Pose
 
 from PIL import Image, ImageTk
 
-#TODO create logs
-#TODO create edit mode
+#TODO edit mode #FIXME map bug
+#TODO walls
+#TODO setGaol pose in gui
 
 ROBOT_PNG = os.path.abspath(os.getcwd()) + "/src/simulator/resource/assets/robot.png"
+FREE_CELL_COLOR = "#F0F0F0"
+OBSTACLE_CELL_COLOR = "#313131"
+BASE_COLOR = "#121212"
 
 class Simulator(Node, threading.Thread):
     def __init__(self, *args, **kwargs):
@@ -86,22 +92,62 @@ class Simulator(Node, threading.Thread):
         self.status = "idle"
         self.change = True
         
+        ### Tkinter App config
         self.root = tk.Tk()
+        self.root.title('ROS2 Navigation Simulator')
+        self.root.geometry("1300x1000")
+        self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.CloseApp)
-        
+        self.root.configure(background=BASE_COLOR)
         self.canvas = tk.Canvas(self.root, 
                                 width=self.map_size["w"],
                                 height=self.map_size["h"],
-                                borderwidth=0,
-                                highlightthickness=0)
-        self.canvas.pack(side="top", fill="both", expand="true")
-        
+                                bg=BASE_COLOR,
+                                bd=0, highlightthickness=0)
+        self.canvas.pack(side="top", fill="both", expand="true", padx=10, pady=10)
         ### Mouse events
         self.canvas.bind('<Button-1>', self.LeftClick)
         self.canvas.bind('<Button-2>', self.MiddleClick)
         self.canvas.bind('<Button-3>', self.RightClick)
-        
         self.DrawMap()
+        
+        ### SIDEBAR
+        # Text Vars
+        self.robot_pose_from_gui = {"x": StringVar(), "y": StringVar(), "theta": StringVar()}
+
+        self.current_pose_lbls = {"x": StringVar(), "y": StringVar(), "theta": StringVar()}
+        self.current_pose_lbls["x"].set("X: {}".format(self.robots[0]["odo"].pose.pose.position.x))
+        self.current_pose_lbls["y"].set("Y: {}".format(self.robots[0]["odo"].pose.pose.position.y))
+        self.current_pose_lbls["theta"].set(u"\u03b8: {}".format(self.robots[0]["odo"].pose.pose.orientation.z))
+        
+        self.goal_pose_str = {"x": StringVar(), "y": StringVar()}
+        self.goal_pose_str["x"].set("X: ")
+        self.goal_pose_str["y"].set("Y: ")
+        
+        Label(self.root, text="Robot position", font=('Arial', 18, 'bold'), anchor=CENTER, bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=10).place(x=1030, y=10)
+        Label(self.root, textvariable=self.current_pose_lbls["x"], font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1020, y=60)
+        Label(self.root, textvariable=self.current_pose_lbls["y"], font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1110, y=60)
+        Label(self.root, textvariable=self.current_pose_lbls["theta"], font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1200, y=60)
+
+        Label(self.root, text="Set position", font=('Arial', 18, 'bold'), anchor=CENTER, bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=10).place(x=1030, y=100)
+        Label(self.root, text="X:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1030, y=150)
+        Entry(self.root, textvariable=self.robot_pose_from_gui["x"], width=5).place(x=1060, y=150)
+        Label(self.root, text="Y:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1120, y=150)
+        Entry(self.root, textvariable=self.robot_pose_from_gui["y"], width=5).place(x=1150, y=150)
+        Label(self.root, text=u"\u03b8:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1210, y=150)
+        Entry(self.root, textvariable=self.robot_pose_from_gui["theta"], width=5).place(x=1240, y=150)
+        Button(self.root, text="Respawn", command=self.RespawnRobot).place(x=1030, y=190)
+
+        Label(self.root, text="Gaol position", font=('Arial', 18, 'bold'), anchor=CENTER, bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=10).place(x=1030, y=260)
+        Label(self.root, textvariable=self.goal_pose_str["x"], font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1020, y=310)
+        Label(self.root, textvariable=self.goal_pose_str["y"], font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1110, y=310)
+        # Label(self.root, text="X:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1030, y=150)
+        # Entry(self.root, textvariable=self.robot_pose_from_gui["x"], width=5).place(x=1060, y=150)
+        # Label(self.root, text="Y:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1120, y=150)
+        # Entry(self.root, textvariable=self.robot_pose_from_gui["y"], width=5).place(x=1150, y=150)
+        # Label(self.root, text=u"\u03b8:", font=('Arial', 16, 'normal'), bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=0).place(x=1210, y=150)
+        # Entry(self.root, textvariable=self.robot_pose_from_gui["theta"], width=5).place(x=1240, y=150)
+        # Button(self.root, text="Respawn", command=self.RespawnRobot).place(x=1030, y=190)
         
         pub = self.create_publisher(String, "sim_connected", 10)
         msg = String()
@@ -118,7 +164,7 @@ class Simulator(Node, threading.Thread):
     def InitSimulator(self):
         if self.map_cfg_flag and self.map_flag and self.robot_flag:
             self.start()
-    
+
     def HandleMapCfg(self, msg):
         s = msg.data.split("/")
         self.cell_size = int(s[1])
@@ -150,7 +196,11 @@ class Simulator(Node, threading.Thread):
                 "icon": None,
                 "item" : None
             }
-            self.SetPose(newborn, robot_data[1].split("-"))
+            
+            x = robot_data[1].split("-")[0]
+            y = robot_data[1].split("-")[1]
+            theta = 0.0
+            self.SetPose(newborn, [x, y, theta])
             
             if len(self.robots) > 0:
                 for other in self.robots:
@@ -171,6 +221,7 @@ class Simulator(Node, threading.Thread):
     def SetPose(self, robot, pose):
         robot["odo"].pose.pose.position.x = float(pose[0])
         robot["odo"].pose.pose.position.y = float(pose[1])
+        robot["odo"].pose.pose.orientation.z = float(pose[2])
     
     ### PUBLISHER HANDLERS
     def PublishStringMsg(self, topic, msg_, log=True):
@@ -208,8 +259,9 @@ class Simulator(Node, threading.Thread):
                 y1 = y * self.cell_size
                 y2 = y1 + self.cell_size
                 
-                color = "black" if self.map_matrix[x][y] == "1" else "white"
-                self.cells[x, y] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, tags="cell")
+                color = OBSTACLE_CELL_COLOR if self.map_matrix[x][y] == "1" else FREE_CELL_COLOR                   
+
+                self.cells[x, y] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, tags="cell", outline=color)
                 self.canvas.tag_lower(self.cells[x, y])
                 for robot in self.robots:
                     if robot["odo"].pose.pose.position.x == x and robot["odo"].pose.pose.position.y == y:
@@ -225,19 +277,13 @@ class Simulator(Node, threading.Thread):
     
     ### EVENT CONTROLS
     def LeftClick(self, event):
-        x = math.floor(event.x / self.cell_size)
-        y = math.floor(event.y / self.cell_size)
-        print("clicked at x: {} y: {}".format(x, y))
-        # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
-        self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y))
-        # tmp = list(self.map_matrix[x])
-        # tmp[y] = '1'
-        
-        # self.map_matrix[x] = ''.join(tmp)
-        # print(self.map_matrix)
-        # self.Matrix2Bin()
-        # self.PublishMapUpdate()        
-    
+        pass
+        # x = math.floor(event.x / self.cell_size)
+        # y = math.floor(event.y / self.cell_size)
+        # print("clicked at x: {} y: {}".format(x, y))
+        # # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
+        # self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y))
+
     def MiddleClick(self, event):
         #TODO bind mouse event        
         print("middle")
@@ -245,7 +291,41 @@ class Simulator(Node, threading.Thread):
     def RightClick(self, event):
         #TODO bind mouse event        
         print("right")
+    
+    ### GUI Buttons Handlers
+    def RespawnRobot(self): 
+        x = self.robot_pose_from_gui["x"].get()
+        y = self.robot_pose_from_gui["y"].get()
+        theta = self.robot_pose_from_gui["theta"].get()
         
+        if len(x) == 0 or len(y) == 0 or len(theta) == 0:
+            messagebox.showinfo("Position Error", "Please fill every input fields (x,y,theta)")
+        else:
+            self.SetPose(self.robots[0], [x,y,theta])
+            start_x = self.robots[0]["odo"].pose.pose.position.x * self.cell_size
+            start_y = self.robots[0]["odo"].pose.pose.position.y * self.cell_size
+            # robot["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
+            # robot_ico_img = Image.open(ROBOT_PNG)
+            # robot_ico_img = robot_ico_img.rotate(robot["odo"].pose.pose.orientation.z)
+            self.robots[0]["icon"] = tk.PhotoImage(file=ROBOT_PNG)
+            self.robots[0]["icon"] = self.RotateRobot(self.robots[0]["odo"].pose.pose.orientation.z)
+            self.robots[0]["item"] = self.canvas.create_image(start_x, start_y, image=self.robots[0]["icon"])
+            self.canvas.tag_raise(self.robots[0]["item"])
+            self.canvas.update()
+        
+        # Update labels
+        self.current_pose_lbls["x"].set("X: {}".format(self.robots[0]["odo"].pose.pose.position.x))
+        self.current_pose_lbls["y"].set("Y: {}".format(self.robots[0]["odo"].pose.pose.position.y))
+        self.current_pose_lbls["theta"].set(u"\u03b8: {}".format(self.robots[0]["odo"].pose.pose.orientation.z))
+        self.robot_pose_from_gui["x"].set("")
+        self.robot_pose_from_gui["y"].set("")
+        self.robot_pose_from_gui["theta"].set("")
+        # publish the new pose
+        pub = self.create_publisher(Pose, "robot_respawn", 10)
+        pub.publish(self.robots[0]["odo"].pose.pose)
+        self.destroy_publisher(pub)
+            
+    
     def UpdateMap(self, msg):
         self.get_logger().info("I got: {}".format(msg.data[0:25]))
         self.bit_map = msg.data
@@ -287,20 +367,14 @@ class Simulator(Node, threading.Thread):
     
     def HandleMove(self, msg):
         if self.__init:
-            # self.canvas.delete(self.robots[0]["item"])
             start_x = msg.pose.pose.position.x * self.cell_size
             start_y = msg.pose.pose.position.y * self.cell_size
-            
-            delta_x = msg.pose.pose.position.x - self.robots[0]["odo"].pose.pose.position.x
-            delta_y = msg.pose.pose.position.y - self.robots[0]["odo"].pose.pose.position.y
-            
             self.robots[0]["icon"] = tk.PhotoImage(file=ROBOT_PNG)
+            # TODO rotation
             # self.robots[0]["icon"] = self.RotateRobot(-msg.pose.pose.orientation.z)
             self.robots[0]["item"] = self.canvas.create_image(start_x, start_y, image=self.robots[0]["icon"])
             self.canvas.tag_raise(self.robots[0]["item"])
             self.canvas.update()
-
-            # robot["item"] = self.canvas.create_image(start_x, start_y, image=tk_img)
             # self.robots[0]["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
     
 def main():
@@ -311,7 +385,6 @@ def main():
     
     # app.destroy_node()
     # rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

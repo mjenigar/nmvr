@@ -38,7 +38,7 @@ class Robot(Node):
         ### Listeners
         self.world_conn_listener = self.create_subscription(String, "world_connection", self.Connect2World, 10)
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
-        # self.pose_listener = self.create_subscription(Pose, "robot_position", self.UpdatePose, 10)
+        self.respawn_listener = self.create_subscription(Pose, "robot_respawn", self.UpdatePose, 10)
         
         ### Timers
         self.search4world = self.create_timer(1, self.Search4World)
@@ -84,7 +84,7 @@ class Robot(Node):
             self.destroy_publisher(self.conn_req)
 
             # ### Move
-            self.Move2Goal()
+            # self.Move2Goal()
         else:
             self.get_logger().info("CONNECTION REFUSED!: {} REASON: {}".format(response, msg.data.split("_")[1]))
 
