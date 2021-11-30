@@ -17,43 +17,34 @@ from PIL import Image, ImageTk
 
 #TODO create logs
 #TODO create edit mode
-#TODO https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 
+ROBOT_PNG = os.path.abspath(os.getcwd()) + "/src/simulator/resource/assets/robot.png"
 
 class Simulator(Node, threading.Thread):
     def __init__(self, *args, **kwargs):
         super().__init__("Simulator")
         # tk.Tk.__init__(self, *args, **kwargs)
         threading.Thread.__init__(self)
-
         self.__init = False
-        
-        ######
         ### Map
         self.map_size = {}
         self.cell_size = None
         self.bit_map = None
         self.cells = {}
-        ######
-
-        ######
         ### Status
         self.status = "Searching for connection"        
         self.robots = []
         self.active_robot = None
         self.change = True       
-        ######
         ### Flags
         self.map_cfg_flag = False
         self.map_flag = False
         self.robot_flag = False
-        
         ### Listeners
         # Init
         self.map_cfg_listener = self.create_subscription(String, "map_cfg", self.HandleMapCfg, 10)
         self.map_listener = self.create_subscription(String, "map", self.HandleMap, 10)
         self.robot_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
-        # self.robot_move_listener = self.create_subscription(Pose, "current_pose", self.HandleMove, 10)
         self.robot_move_listener = self.create_subscription(Odometry, "current_pose", self.HandleMove, 10)
         # Events
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
@@ -67,9 +58,6 @@ class Simulator(Node, threading.Thread):
         self.init_timer = self.create_timer(1, self.InitSimulator)
         self.status_timer = self.create_timer(1, self.GetStatus)
 
-        ### TMP
-        self.velocity = np.array([1, 0])
-    
     def GetStatus(self):
         if self.change:
             if len(self.robots) > 0:
@@ -113,12 +101,6 @@ class Simulator(Node, threading.Thread):
         self.canvas.bind('<Button-2>', self.MiddleClick)
         self.canvas.bind('<Button-3>', self.RightClick)
         
-        ### Controls events
-        self.root.bind('<Left>', self.Left)           
-        self.root.bind('<Right>', self.Right)           
-        self.root.bind('<Up>', self.Up)           
-        self.root.bind('<Down>', self.Down)     
-
         self.DrawMap()
         
         pub = self.create_publisher(String, "sim_connected", 10)
@@ -162,9 +144,10 @@ class Simulator(Node, threading.Thread):
             robot_data = robot.split("_")
             newborn = {
                 "name": robot_data[0],
-                "size": 25,
+                "size": 32,
                 "wheel_r": 1.0,
                 "odo" : Odometry(),
+                "icon": None,
                 "item" : None
             }
             self.SetPose(newborn, robot_data[1].split("-"))
@@ -199,14 +182,6 @@ class Simulator(Node, threading.Thread):
             self.get_logger().info("{} [{} Bytes] --> {}".format(topic, sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
         self.destroy_publisher(pub)
     
-    # def PublishMapUpdate(self):
-    #     msg = String()
-    #     self.pub = self.create_publisher(String, "map_upd", 10)
-    #     msg.data = self.bit_map
-    #     self.pub.publish(msg)
-    #     self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
-    #     self.destroy_publisher(self.pub)
-        
     def GetMapMatrix(self):
         x = 0
         self.map_matrix = [] 
@@ -239,20 +214,14 @@ class Simulator(Node, threading.Thread):
                 for robot in self.robots:
                     if robot["odo"].pose.pose.position.x == x and robot["odo"].pose.pose.position.y == y:
                         start_x = robot["odo"].pose.pose.position.x * self.cell_size
-                        end_x = start_x + robot["size"]
-                        
                         start_y = robot["odo"].pose.pose.position.y * self.cell_size
-                        end_y = start_y + robot["size"]
-                        
-                        robot["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
-                        
-                        # dir_ = os.path.abspath(os.getcwd())
-                        # MAP_FILE = dir_ + "/src/simulator/resource/assets/robot.png"
-                        # robot_png = ImageTk.PhotoImage(MAP_FILE)
-                        # robot["item"] = self.canvas.create_image(start_x,start_y, image=robot_png)
-                        
+                        # robot["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
+                        # robot_ico_img = Image.open(ROBOT_PNG)
+                        # robot_ico_img = robot_ico_img.rotate(robot["odo"].pose.pose.orientation.z)
+                        robot["icon"] = tk.PhotoImage(file=ROBOT_PNG)
+                        robot["icon"] = self.RotateRobot(robot["odo"].pose.pose.orientation.z)
+                        robot["item"] = self.canvas.create_image(start_x, start_y, image=robot["icon"])
                         self.canvas.tag_raise(robot["item"])
-                        # self.canvas.tag_raise(robot_png)
     
     ### EVENT CONTROLS
     def LeftClick(self, event):
@@ -277,38 +246,6 @@ class Simulator(Node, threading.Thread):
         #TODO bind mouse event        
         print("right")
         
-    def Right(self, event):
-        # self.PublishStringMsg("move_forward", self.active_robot["name"])
-        self.canvas.move(self.robots[0]["item"], self.robots[0]["x"] +  self.velocity[0], self.robots[0]["y"] + self.velocity[1])
-        
-    def Left(self, event):
-        # self.PublishStringMsg("move_backward", self.active_robot["name"])
-        self.canvas.move(self.robots[0]["item"], self.robots[0]["x"] -  self.velocity[0], self.robots[0]["y"] - self.velocity[1])
-
-    def Up(self, event):
-        # TODO rotation up
-        new_vel = [self.velocity[0], self.velocity[1] - 0.1]
-        self.velocity = np.array(new_vel)
-        print("Rotating UP Current {}".format(self.velocity[1]))
-        
-    def Down(self, event):
-        # TODO rotation down
-        new_vel = [self.velocity[0], self.velocity[1] + 0.1]
-        self.velocity = np.array(new_vel)
-        print("Rotating DOWN Current {}".format(self.velocity[1]))
-
-    ### Move handlers
-    # def UpdatePosition(self, msg):
-    #     self.get_logger().info("sent [{} Bytes] --> {}".format(sys.getsizeof(msg.data), msg.data[0:25] if len(msg.data) > 25 else msg.data))
-    #     raw = msg.data.split("_")
-    #     robot2upd = raw[0]
-    #     for robot in self.robots:
-    #         if robot["name"] == robot2upd:
-    #             robot["x"] = float(raw[1].split("-")[0])
-    #             robot["y"] = float(raw[1].split("-")[1])
-
-    #             self.canvas.move(robot["item"], robot["x"], robot["y"])
-
     def UpdateMap(self, msg):
         self.get_logger().info("I got: {}".format(msg.data[0:25]))
         self.bit_map = msg.data
@@ -317,18 +254,54 @@ class Simulator(Node, threading.Thread):
 
         self.get_logger().info("Map updated")
 
+    def RotateRobot(self, angle):
+        angleInRads = angle
+        diag = math.sqrt(self.robots[0]["icon"].width()**2 + self.robots[0]["icon"].height()**2)
+        x_midpoint = self.robots[0]["icon"].width()/2
+        y_midpoint = self.robots[0]["icon"].height()/2
+        rotated = tk.PhotoImage(width=int(diag), height=int(diag))
+        for x in range(self.robots[0]["icon"].width()):
+            for y in range(self.robots[0]["icon"].height()):
+                # convert to ordinary mathematical coordinates
+                x_new = float(x)
+                y_new = float(-y)
+                # shift to origin
+                x_new -= x_midpoint
+                y_new += y_midpoint
+                # new rotated variables, rotated around origin (0,0) using simoultaneous assigment
+                x_new, y_new = x_new * math.cos(angleInRads) - y_new * math.sin(angleInRads), x_new * math.sin(angleInRads) + y_new * math.cos(angleInRads)
+                # shift back to quadrant iv (x,-y), but centered in bigger box
+                x_new += diag/2
+                y_new -= diag/2
+                # convert to -y coordinates
+                x_new = x_new
+                y_new = -y_new
+                # get pixel data from the pixel being rotated in hex format
+                rgb = '#%02x%02x%02x' % self.robots[0]["icon"].get(x, y)
+                # put that pixel data into the new image
+                rotated.put(rgb, (int(x_new), int(y_new)))
+                # this helps fill in empty pixels due to rounding issues
+                rotated.put(rgb, (int(x_new+1), int(y_new)))
+
+        return rotated
+    
     def HandleMove(self, msg):
         if self.__init:
-            # self.canvas.move(self.robots[0]["item"], self.robots[0]["odo"].pose.pose.position.x, self.robots[0]["odo"].pose.pose.position.y)
-            self.canvas.delete(self.robots[0]["item"])
+            # self.canvas.delete(self.robots[0]["item"])
             start_x = msg.pose.pose.position.x * self.cell_size
-            end_x = start_x + self.robots[0]["size"]
-            
             start_y = msg.pose.pose.position.y * self.cell_size
-            end_y = start_y + self.robots[0]["size"]
             
-            self.robots[0]["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
-            # self.canvas.move(self.robots[0]["item"], msg.twist.twist.linear.x, msg.twist.twist.angular.y)
+            delta_x = msg.pose.pose.position.x - self.robots[0]["odo"].pose.pose.position.x
+            delta_y = msg.pose.pose.position.y - self.robots[0]["odo"].pose.pose.position.y
+            
+            self.robots[0]["icon"] = tk.PhotoImage(file=ROBOT_PNG)
+            # self.robots[0]["icon"] = self.RotateRobot(-msg.pose.pose.orientation.z)
+            self.robots[0]["item"] = self.canvas.create_image(start_x, start_y, image=self.robots[0]["icon"])
+            self.canvas.tag_raise(self.robots[0]["item"])
+            self.canvas.update()
+
+            # robot["item"] = self.canvas.create_image(start_x, start_y, image=tk_img)
+            # self.robots[0]["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
     
 def main():
     rclpy.init()

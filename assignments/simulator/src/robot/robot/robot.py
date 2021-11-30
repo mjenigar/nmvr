@@ -19,7 +19,7 @@ class Robot(Node):
         self.connected = False
         self.change = True
         self.name = name
-        self.size = 25
+        self.size = 32
         self.wheel_r = 1.0
         self.baseline = 1.0
         self.max_lin_vel = 5.0
@@ -121,17 +121,9 @@ class Robot(Node):
             phi = (d_right - d_left) / self.baseline
             
             self.odo.twist.twist.linear.x = self.distance_PID.update(distance)
-            # if self.odo.twist.twist.linear.x > self.max_lin_vel:
-            #     self.odo.twist.twist.linear.x = self.max_lin_vel
-            # elif self.odo.twist.twist.linear.x < -self.max_lin_vel:
-            #     self.odo.twist.twist.linear.x = -self.max_lin_vel
             print("{} px/sec".format(self.odo.twist.twist.linear.x))
             
             self.odo.twist.twist.angular.z = self.angle_PID.update(self.steering_angle() - self.odo.pose.pose.orientation.z)
-            # if self.odo.twist.twist.angular.z > self.max_ang_vel:
-            #     self.odo.twist.twist.angular.z = self.max_ang_vel
-            # elif self.odo.twist.twist.angular.z < -self.max_ang_vel:
-            #     self.odo.twist.twist.angular.z = -self.max_ang_vel
             print("{} rad/sec".format(self.odo.twist.twist.angular.z))
             
             next_pose.position.x = self.odo.pose.pose.position.x + d_center*math.cos(self.odo.pose.pose.orientation.z)
@@ -143,7 +135,7 @@ class Robot(Node):
             print("x:{} y:{} z:{} deg\n\n".format(next_pose.position.x, next_pose.position.y, next_pose.orientation.z))            
             self.UpdatePose(next_pose)
             self.pub_position.publish(self.odo)
-            time.sleep(0.01)
+            time.sleep(0.3)
             
             if distance > 100:
                 break
@@ -211,7 +203,7 @@ class PID:
 def main():
     rclpy.init()
 
-    robot = Robot([0, 0])
+    robot = Robot([2, 2])
     rclpy.spin(robot)
     
     robot.destroy_node()
