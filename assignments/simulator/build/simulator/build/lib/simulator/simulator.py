@@ -53,7 +53,8 @@ class Simulator(Node, threading.Thread):
         self.map_cfg_listener = self.create_subscription(String, "map_cfg", self.HandleMapCfg, 10)
         self.map_listener = self.create_subscription(String, "map", self.HandleMap, 10)
         self.robot_listener = self.create_subscription(String, "robots", self.HandleRobots, 10)
-        self.robot_move_listener = self.create_subscription(Pose, "current_pose", self.HandleMove, 10)
+        # self.robot_move_listener = self.create_subscription(Pose, "current_pose", self.HandleMove, 10)
+        self.robot_move_listener = self.create_subscription(Odometry, "current_pose", self.HandleMove, 10)
         # Events
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
         self.map_update_listener = self.create_subscription(String, "map_upd", self.UpdateMap, 10)
@@ -161,8 +162,8 @@ class Simulator(Node, threading.Thread):
             robot_data = robot.split("_")
             newborn = {
                 "name": robot_data[0],
-                "size": 32,
-                "wheel_r": 0.08,
+                "size": 25,
+                "wheel_r": 1.0,
                 "odo" : Odometry(),
                 "item" : None
             }
@@ -318,7 +319,16 @@ class Simulator(Node, threading.Thread):
 
     def HandleMove(self, msg):
         if self.__init:
-            self.canvas.move(self.robots[0]["item"], msg.position.x, msg.position.y)
+            # self.canvas.move(self.robots[0]["item"], self.robots[0]["odo"].pose.pose.position.x, self.robots[0]["odo"].pose.pose.position.y)
+            self.canvas.delete(self.robots[0]["item"])
+            start_x = msg.pose.pose.position.x * self.cell_size
+            end_x = start_x + self.robots[0]["size"]
+            
+            start_y = msg.pose.pose.position.y * self.cell_size
+            end_y = start_y + self.robots[0]["size"]
+            
+            self.robots[0]["item"] = self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill='red')
+            # self.canvas.move(self.robots[0]["item"], msg.twist.twist.linear.x, msg.twist.twist.angular.y)
     
 def main():
     rclpy.init()

@@ -31,7 +31,7 @@ class World(Node):
         self.robots_responds = []
         self.connected_simulator = 0 
         # pub & sub
-        self.ping = self.create_timer(10, self.PingAll)
+        self.ping = self.create_timer(3, self.PingAll)
         self.robots_status = self.create_subscription(String, "ping_response", self.PingResponse, 10)
         ######
         

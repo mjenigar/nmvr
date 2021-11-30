@@ -19,17 +19,21 @@ class Robot(Node):
         self.connected = False
         self.change = True
         self.name = name
-        self.size = 32
-        self.wheel_r = 0.5
+        self.size = 25
+        self.wheel_r = 1.0
+        self.baseline = 1.0
+        self.max_lin_vel = 5.0
+        self.max_ang_vel = math.pi
 
         ### Init position
         self.odo = Odometry()
         self.odo.pose.pose.position.x = float(pos[0])
         self.odo.pose.pose.position.y = float(pos[1])
-        self.odo.pose.pose.orientation = self.quaternion_from_euler(0,0,0)
+        self.odo.pose.pose.orientation.z = 0.0
         
         ### Publishers 
-        self.pub_position = self.create_publisher(Pose, "current_pose", 10)
+        # self.pub_position = self.create_publisher(Pose, "current_pose", 10)
+        self.pub_position = self.create_publisher(Odometry, "current_pose", 10)
 
         ### Listeners
         self.world_conn_listener = self.create_subscription(String, "world_connection", self.Connect2World, 10)
@@ -40,15 +44,12 @@ class Robot(Node):
         self.search4world = self.create_timer(1, self.Search4World)
         self.robot_status = self.create_timer(1, self.GetStatus)
 
-        self.current_time = self.get_clock().now()
-        self.last_time = self.get_clock().now()
-        
-        self.angle_PID = PID(1.4, 0, 0) 
-        self.distance_PID = PID(0.3, 0, 0)
+        self.angle_PID = PID(0.42, 0, 0) 
+        self.distance_PID = PID(0.33, 0, 0)
         
         ### TMP
         # TODO create input from GUI
-        self.SetGoal(20, 3)
+        self.SetGoal(30, 12)
         
     def GetStatus(self):
         if self.change:
@@ -95,8 +96,11 @@ class Robot(Node):
         self.goal = Pose()
         self.goal.position.x = float(x) 
         self.goal.position.y = float(y) 
+    
+    def steering_angle(self):
+        return math.atan2(self.goal.position.y - self.odo.pose.pose.position.y, self.goal.position.x - self.odo.pose.pose.position.x)
         
-    def Move2Goal(self, tolerance=1.5):
+    def Move2Goal(self, tolerance=0.5):
         next_pose = Pose()
         distance = self.GetDistance()
         # linear px/sec
@@ -109,56 +113,44 @@ class Robot(Node):
         self.odo.twist.twist.angular.z = 0.1
         
         while distance >= tolerance:
-            self.current_time = self.get_clock().now()
-            self.dt = (self.current_time - self.last_time).nanoseconds / 1e9
             distance = self.GetDistance()
             print("Distance from goal: {}".format(distance))
-
-            v_left = self.wheel_r * self.odo.twist.twist.linear.x
-            v_right = self.wheel_r * self.odo.twist.twist.linear.x
-            d_left = v_left * self.dt
-            d_right = v_right * self.dt
-            
+            d_left = (self.odo.twist.twist.linear.x - 1/2 * self.wheel_r * self.odo.twist.twist.angular.z) * 0.1
+            d_right = (self.odo.twist.twist.linear.x + 1/2 * self.wheel_r * self.odo.twist.twist.angular.z) * 0.1
             d_center = (d_left + d_right)/2
-            phi = (d_right - d_left)/self.size - 4
+            phi = (d_right - d_left) / self.baseline
             
-            self.odo.twist.twist.linear.x = self.distance_PID.update(distance/self.dt)
+            self.odo.twist.twist.linear.x = self.distance_PID.update(distance)
+            # if self.odo.twist.twist.linear.x > self.max_lin_vel:
+            #     self.odo.twist.twist.linear.x = self.max_lin_vel
+            # elif self.odo.twist.twist.linear.x < -self.max_lin_vel:
+            #     self.odo.twist.twist.linear.x = -self.max_lin_vel
             print("{} px/sec".format(self.odo.twist.twist.linear.x))
-            self.odo.twist.twist.angular.z = self.angle_PID.update(phi/self.dt)
+            
+            self.odo.twist.twist.angular.z = self.angle_PID.update(self.steering_angle() - self.odo.pose.pose.orientation.z)
+            # if self.odo.twist.twist.angular.z > self.max_ang_vel:
+            #     self.odo.twist.twist.angular.z = self.max_ang_vel
+            # elif self.odo.twist.twist.angular.z < -self.max_ang_vel:
+            #     self.odo.twist.twist.angular.z = -self.max_ang_vel
             print("{} rad/sec".format(self.odo.twist.twist.angular.z))
             
             next_pose.position.x = self.odo.pose.pose.position.x + d_center*math.cos(self.odo.pose.pose.orientation.z)
             next_pose.position.y = self.odo.pose.pose.position.y + d_center*math.sin(self.odo.pose.pose.orientation.z)               
-            print(next_pose.position.y)
+            next_pose.orientation.z = self.odo.pose.pose.orientation.z + phi
+            # next_pose = self.Edges(next_pose)
             
-            next_pose.orientation = self.quaternion_from_euler(0,0, float(self.odo.pose.pose.orientation.z + phi))
-            next_pose = self.Edges(next_pose)
-            
-            self.pub_position.publish(next_pose)
+            # self.pub_position.publish(next_pose)
             print("x:{} y:{} z:{} deg\n\n".format(next_pose.position.x, next_pose.position.y, next_pose.orientation.z))            
             self.UpdatePose(next_pose)
-            time.sleep(1)
+            self.pub_position.publish(self.odo)
+            time.sleep(0.01)
+            
+            if distance > 100:
+                break
         
         print("Stop")
         self.odo.twist.twist.linear.x = 0.0
         self.odo.twist.twist.angular.z = 0.0
-        
-    # def GetNextPosition(self):
-    #     next_pose = Pose()
-        
-    #     v_left = self.wheel_r * self.vel.angular.z 
-    #     v_right = self.wheel_r * self.vel.angular.z
-    #     d_left = v_left * self.dt
-    #     d_right = v_right * self.dt
-        
-    #     d_center = (d_left + d_right)/2
-    #     phi = (d_right - d_left)/self.size
-        
-    #     next_pose.orientation.z = self.odo.pose.pose.orientation.z + phi
-    #     next_pose.position.x = self.odo.pose.pose.position.x + d_center*math.cos(phi) 
-    #     next_pose.position.y = self.odo.pose.pose.position.y + d_center*math.sin(phi)                
-
-        # return self.Edges(next_pose)
 
     def UpdatePose(self, next_pose):
         self.odo.pose.pose.position.x = next_pose.position.x 
@@ -168,13 +160,13 @@ class Robot(Node):
     def Edges(self, next_pose):
         if next_pose.position.x > 38:
             next_pose.position.x = 38.0 
-        # elif next_pose.position.x < 0:
-        #     next_pose.position.x = 0.0 
+        elif next_pose.position.x < 0:
+            next_pose.position.x = 0.0 
         
         if next_pose.position.y > 38:
             next_pose.position.y = 38.0
-        # elif next_pose.position.y < 0:
-        #     next_pose.position.y = 0.0
+        elif next_pose.position.y < 0:
+            next_pose.position.y = 0.0
         
         return next_pose    
     
@@ -188,49 +180,6 @@ class Robot(Node):
         else:
             return None
     
-    def quaternion_from_euler(self, roll, pitch, yaw):
-        """
-        SRC: https://gist.github.com/salmagro/2e698ad4fbf9dae40244769c5ab74434
-        """
-        q = Quaternion()
-        
-        cy = math.cos(yaw * 0.5)
-        sy = math.sin(yaw * 0.5)
-        cp = math.cos(pitch * 0.5)
-        sp = math.sin(pitch * 0.5)
-        cr = math.cos(roll * 0.5)
-        sr = math.sin(roll * 0.5)
-
-        q.w = cy * cp * cr + sy * sp * sr
-        q.x = cy * cp * sr - sy * sp * cr
-        q.y = sy * cp * sr + cy * sp * cr
-        q.z =sy * cp * cr - cy * sp * sr
-        
-        return q
-    
-    def GetAlpha(self, tolerance=0.005):
-        current_x = self.odo.pose.pose.position.x
-        current_y = self.odo.pose.pose.position.y 
-        goal_x = self.goal.position.x 
-        goal_y = self.goal.position.y 
-        theta =  self.odo.pose.pose.orientation.z
-        
-        self.R = math.sqrt(math.pow(current_x - goal_x , 2) + math.pow(current_y - goal_y , 2))
-        self.xr = self.R*math.cos(theta)
-        self.yr = self.R*math.sin(theta)
-        self.xim = current_x + self.xr
-        self.yim = current_y + self.yr
-        self.C = math.sqrt(math.pow(self.xim - goal_x , 2) + math.pow(self.yim - goal_y , 2))
-        if self.xim > goal_x:
-            return math.acos((2*math.pow(self.R,2) - math.pow(self.C,2))/(2*math.pow(self.R,2)))
-        else:
-            return 2 * math.pi * math.acos((2 * math.pow(self.R, 2) - math.pow(self.C, 2)) / (2 * math.pow(self.R, 2)))
-
-
-
-
-
-
 class PID:
     def __init__(self, P, I, D,  Derivator=0, Integrator=0, IntegratorRange=[-500, 500]):
         self.kp = P 
@@ -240,7 +189,6 @@ class PID:
         self.integrator = Integrator
         self.integratorRange = IntegratorRange
         
-        self.goal = 0.0
         self.error = 0.0
         
     def update(self, error):
@@ -259,16 +207,11 @@ class PID:
         self.I = self.integrator * self.ki
         
         return self.P + self.I + self.D
-    
-    def setGoal(self, goal):
-        self.goal = goal
-        self.integrator = 0
-        self.derivator = 0
         
 def main():
     rclpy.init()
 
-    robot = Robot([1,0])
+    robot = Robot([0, 0])
     rclpy.spin(robot)
     
     robot.destroy_node()
