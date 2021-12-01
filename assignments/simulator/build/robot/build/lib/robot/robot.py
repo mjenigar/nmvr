@@ -32,13 +32,14 @@ class Robot(Node):
         self.odo.pose.pose.orientation.z = 0.0
         
         ### Publishers 
-        # self.pub_position = self.create_publisher(Pose, "current_pose", 10)
         self.pub_position = self.create_publisher(Odometry, "current_pose", 10)
-
+        self.pub_dist = self.create_publisher(String, "current_distance", 10)
+        
         ### Listeners
         self.world_conn_listener = self.create_subscription(String, "world_connection", self.Connect2World, 10)
         self.ping_response = self.create_subscription(String, "world_ping", self.ResponsePing, 10)
         self.respawn_listener = self.create_subscription(Pose, "robot_respawn", self.UpdatePose, 10)
+        self.move2goal_listener = self.create_subscription(Pose, "move_to_goal", self.StartMove, 10)
         
         ### Timers
         self.search4world = self.create_timer(1, self.Search4World)
@@ -46,10 +47,6 @@ class Robot(Node):
 
         self.angle_PID = PID(0.42, 0, 0) 
         self.distance_PID = PID(0.33, 0, 0)
-        
-        ### TMP
-        # TODO create input from GUI
-        self.SetGoal(30, 12)
         
     def GetStatus(self):
         if self.change:
@@ -82,9 +79,6 @@ class Robot(Node):
             self.search4world.destroy()
             self.get_logger().info("CONNECTED!")
             self.destroy_publisher(self.conn_req)
-
-            # ### Move
-            # self.Move2Goal()
         else:
             self.get_logger().info("CONNECTION REFUSED!: {} REASON: {}".format(response, msg.data.split("_")[1]))
 
@@ -99,10 +93,16 @@ class Robot(Node):
     
     def steering_angle(self):
         return math.atan2(self.goal.position.y - self.odo.pose.pose.position.y, self.goal.position.x - self.odo.pose.pose.position.x)
-        
+    
+    def StartMove(self, msg):
+        self.SetGoal(msg.position.x, msg.position.y)
+        self.Move2Goal()
+    
     def Move2Goal(self, tolerance=0.5):
+        msg = String()
         next_pose = Pose()
         distance = self.GetDistance()
+
         # linear px/sec
         self.odo.twist.twist.linear.x = 0.1
         self.odo.twist.twist.linear.y = 0.0
@@ -131,11 +131,12 @@ class Robot(Node):
             next_pose.orientation.z = self.odo.pose.pose.orientation.z + phi
             # next_pose = self.Edges(next_pose)
             
-            # self.pub_position.publish(next_pose)
-            print("x:{} y:{} z:{} deg\n\n".format(next_pose.position.x, next_pose.position.y, next_pose.orientation.z))            
+            # print("x:{} y:{} z:{} deg\n\n".format(next_pose.position.x, next_pose.position.y, next_pose.orientation.z))            
             self.UpdatePose(next_pose)
             self.pub_position.publish(self.odo)
-            time.sleep(0.3)
+            msg.data = str(distance)
+            self.pub_dist.publish(msg)
+            time.sleep(0.01)
             
             if distance > 100:
                 break
@@ -143,6 +144,7 @@ class Robot(Node):
         print("Stop")
         self.odo.twist.twist.linear.x = 0.0
         self.odo.twist.twist.angular.z = 0.0
+        self.pub_position.publish(self.odo)
 
     def UpdatePose(self, next_pose):
         self.odo.pose.pose.position.x = next_pose.position.x 
