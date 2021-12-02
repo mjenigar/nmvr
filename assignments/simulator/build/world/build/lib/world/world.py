@@ -15,39 +15,21 @@ class World(Node):
         self.world_config = self.ReadMap(file)
         self.world_map = self.world_config["map"]
         self.msg = String()
-
-        ######
         ### Status
         self.status = "wait"
         self.available_robots = []
         self.simulator = "disconnected"
         self.change = True
-
         self.WorldStatus = self.create_timer(1, self.GetStatus)
-        ######
-        
-        ######
         ### Ping
         self.robots_responds = []
         self.connected_simulator = 0 
-        # pub & sub
+        ### pub & sub
         self.ping = self.create_timer(3, self.PingAll)
-        self.robots_status = self.create_subscription(String, "ping_response", self.PingResponse, 10)
-        ######
-        
-        ### Listeners
-        # Robot
-        # self.disconnect_listen = self.create_subscription(String, "disconnect", self.DisconnectRobot, 10)
-        # Init
         self.Search4Robot = self.create_subscription(String, "connection_req", self.ConnectRobot, 10)
         self.sim_listener = self.create_subscription(String, "sim_connected", self.HandleInitSimResponse, 10)
-
-        # Events
+        self.robots_status = self.create_subscription(String, "ping_response", self.PingResponse, 10)
         self.map_listener = self.create_subscription(String, "map_update_coord", self.UpdateMap, 10)
-        # self.move_forward_listener = self.create_subscription(String, "move_forward", self.HandleForward, 10)
-        # self.move_backward_listener = self.create_subscription(String, "move_forward", self.HandleBackward, 10)
-        # self.update_robot_pos_listener = self.create_subscription(String, "robot_upd", self.UpdateRobotPos, 10)
-        
         ### Timers
         self.try_open_sim = self.create_timer(1, self.StartSimulator)
     
@@ -76,9 +58,6 @@ class World(Node):
             self.get_logger().info("STATUS: {} ROBOTS: {} SIMULATOR: {}".format(self.status, len(self.available_robots), self.simulator))
             self.change = False
     
-    def isSimulatorOpened(self):
-        return True if (self.simulator != None) else False
-    
     def PingAll(self):
         if len(self.available_robots) > 0 and self.simulator != "disconnected":
             self.PublishStrMsg("world_ping", "HEY!", False)
@@ -103,8 +82,7 @@ class World(Node):
             self.simulator = "disconnected"
             self.try_open_sim = self.create_timer(1, self.StartSimulator)
             self.change = True
-            
-                        
+
         self.robots_responds = []
         self.connected_simulator = 0
         self.wait4resp.destroy()
@@ -139,15 +117,6 @@ class World(Node):
             code += str(pos["value"])
             
         return code
-    
-    # def DisconnectRobot(self, msg):
-    #     robot = msg.data.split("_")[1]
-    #     for robot_ in self.available_robots:
-    #         if robot == robot_["name"]:
-    #             self.available_robots.remove(robot)
-    #             self.get_logger().info("{} disconnected".format(robot))
-    #             self.change = True
-
     
     def GetRobotPos(self):
         _str = ""
@@ -192,30 +161,6 @@ class World(Node):
         self.status = "idle"
         self.change = True
 
-    def HandleForward(self, msg):
-        self.get_logger().info("{}".format(msg.data))
-        robot2move = msg.data
-        topic = "{}_forward".format(robot2move)
-        self.PublishStrMsg(topic, "Get new pos")
-    
-    def HandleBackward(self, msg):
-        self.get_logger().info("{}".format(msg.data))
-        robot2move = msg.data
-        topic = "{}_backward".format(robot2move)
-        self.PublishStrMsg(topic, "Get new pos")
-
-    def UpdateRobotPos(self, msg):
-        self.get_logger().info("{}".format(msg.data))
-        raw = msg.data.split("_")
-        robot2upd = raw[0]
-        for robot in self.available_robots:
-            if robot["name"] == robot2upd:
-                robot["x"] = float(raw[1].split("-")[0])
-                robot["y"] = float(raw[1].split("-")[1])
-                
-        self.PublishStrMsg("robot_pos_update", msg.data)
-        
-
     def PublishStrMsg(self, topic, msg, log=True):
         self.pub = self.create_publisher(String, topic, 10)
         self.msg.data = msg
@@ -226,13 +171,10 @@ class World(Node):
 
 def main():
     rclpy.init()
-
     w = World(MAP_FILE)
     rclpy.spin(w)
-    
     w.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

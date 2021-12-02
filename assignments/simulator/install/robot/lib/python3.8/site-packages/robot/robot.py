@@ -9,8 +9,6 @@ from geometry_msgs.msg import Pose, Twist, Quaternion
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 
-# from regulator import PID
-
 class Robot(Node):
     def __init__(self, pos, name="Isaac"):
         super().__init__(name)
@@ -114,24 +112,19 @@ class Robot(Node):
         
         while distance >= tolerance:
             distance = self.GetDistance()
-            print("Distance from goal: {}".format(distance))
             d_left = (self.odo.twist.twist.linear.x - 1/2 * self.wheel_r * self.odo.twist.twist.angular.z) * 0.1
             d_right = (self.odo.twist.twist.linear.x + 1/2 * self.wheel_r * self.odo.twist.twist.angular.z) * 0.1
             d_center = (d_left + d_right)/2
             phi = (d_right - d_left) / self.baseline
             
             self.odo.twist.twist.linear.x = self.distance_PID.update(distance)
-            print("{} px/sec".format(self.odo.twist.twist.linear.x))
-            
             self.odo.twist.twist.angular.z = self.angle_PID.update(self.steering_angle() - self.odo.pose.pose.orientation.z)
-            print("{} rad/sec".format(self.odo.twist.twist.angular.z))
             
             next_pose.position.x = self.odo.pose.pose.position.x + d_center*math.cos(self.odo.pose.pose.orientation.z)
             next_pose.position.y = self.odo.pose.pose.position.y + d_center*math.sin(self.odo.pose.pose.orientation.z)               
             next_pose.orientation.z = self.odo.pose.pose.orientation.z + phi
             # next_pose = self.Edges(next_pose)
             
-            # print("x:{} y:{} z:{} deg\n\n".format(next_pose.position.x, next_pose.position.y, next_pose.orientation.z))            
             self.UpdatePose(next_pose)
             self.pub_position.publish(self.odo)
             msg.data = str(distance)
@@ -141,7 +134,6 @@ class Robot(Node):
             if distance > 100:
                 break
         
-        print("Stop")
         self.odo.twist.twist.linear.x = 0.0
         self.odo.twist.twist.angular.z = 0.0
         self.pub_position.publish(self.odo)

@@ -19,7 +19,6 @@ from PIL import Image, ImageTk
 
 #TODO edit mode #FIXME map bug
 #TODO walls
-#TODO setGaol pose in gui
 #FIXME close mainthread err
 
 ROBOT_PNG = os.path.abspath(os.getcwd()) + "/src/simulator/resource/assets/robot.png"
@@ -88,7 +87,7 @@ class Simulator(Node, threading.Thread):
         self.exit.set_result("exit")
         self.destroy_node()
         rclpy.shutdown()
-    
+  
     def run(self):
         self.get_logger().info("Starting simulator ...")
         self.init.set_result("OK")
@@ -126,6 +125,9 @@ class Simulator(Node, threading.Thread):
         self.current["theta"].set(u"\u03b8: {:.2f}".format(self.robots[0]["odo"].pose.pose.orientation.z))
         self.current["lin_vel"].set("linear: {:.2f} px/s".format(self.robots[0]["odo"].twist.twist.linear.x))
         self.current["ang_vel"].set("angular: {:.2f} rad/s".format(self.robots[0]["odo"].twist.twist.angular.z))
+        # Int Vars
+        self.grid = tk.IntVar()
+        self.grid.set(0)
         
         # widgets
         Label(self.root, text="Robot position", font=FONT_TITLE, anchor=CENTER, bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=10).place(x=1030, y=10)
@@ -152,6 +154,9 @@ class Simulator(Node, threading.Thread):
         Button(self.root, text="Go", command=self.Move2Goal).place(x=1030, y=420)
         Label(self.root, textvariable=self.distance_var, font=FONT_BASE, bg=BASE_COLOR, fg="#FFFFFF", padx=15, pady=0).place(x=1020, y=460)
         
+        Label(self.root, text="Map settings", font=FONT_TITLE, anchor=CENTER, bg=BASE_COLOR, fg="#FFFFFF", padx=0, pady=10).place(x=1030, y=510)
+        self.grid_indicator = Checkbutton(self.root, text='Grid', variable=self.grid, onvalue=1, offvalue=0, font=FONT_BASE, bg=BASE_COLOR, selectcolor=BASE_COLOR, borderwidth=0, fg="#FFFFFF", padx=0, pady=0, command=self.Grid).place(x=1030, y=560)
+
         pub = self.create_publisher(String, "sim_connected", 10)
         msg = String()
         msg.data = "sim_ok"
@@ -251,7 +256,7 @@ class Simulator(Node, threading.Thread):
         
         # self.bit_map = ''.join(self.map_matrix)
     
-    def DrawMap(self):
+    def DrawMap(self, ):
         self.GetMapMatrix()
         for x in range(len(self.map_matrix)):
             for y in range(len(self.map_matrix[x])):
@@ -262,7 +267,6 @@ class Simulator(Node, threading.Thread):
                 y2 = y1 + self.cell_size
                 
                 color = OBSTACLE_CELL_COLOR if self.map_matrix[x][y] == "1" else FREE_CELL_COLOR                   
-
                 self.cells[x, y] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, tags="cell", outline=color)
                 self.canvas.tag_lower(self.cells[x, y])
                 for robot in self.robots:
@@ -279,20 +283,22 @@ class Simulator(Node, threading.Thread):
     
     ### EVENT CONTROLS
     def LeftClick(self, event):
-        pass
-        # x = math.floor(event.x / self.cell_size)
-        # y = math.floor(event.y / self.cell_size)
-        # print("clicked at x: {} y: {}".format(x, y))
-        # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
-        # self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y))
+        x  = math.floor(event.x / self.cell_size)
+        y = math.floor(event.y / self.cell_size)
+        print("clicked at x: {} y: {}".format(x, y))
+        self.canvas.itemconfig(self.cells[(x, y)], fill=OBSTACLE_CELL_COLOR)        
+        self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y), False)
 
     def MiddleClick(self, event):
         #TODO bind mouse event        
         print("middle")
 
     def RightClick(self, event):
-        #TODO bind mouse event        
-        print("right")
+        x = math.floor(event.x / self.cell_size)
+        y = math.floor(event.y / self.cell_size)
+        print("clicked at x: {} y: {}".format(x, y))
+        self.canvas.itemconfig(self.cells[(x, y)], fill=FREE_CELL_COLOR)        
+        self.PublishStringMsg("map_update_coord", "{}_{}".format(x, y), False)       
     
     ### GUI Buttons Handlers
     def RespawnRobot(self): 
@@ -351,11 +357,10 @@ class Simulator(Node, threading.Thread):
             self.destroy_publisher(pub)
     
     def UpdateMap(self, msg):
-        self.get_logger().info("I got: {}".format(msg.data[0:25]))
+        # self.get_logger().info("I got: {}".format(msg.data[0:25]))
         self.bit_map = msg.data
-        print(self.bit_map)
+        # print(self.bit_map)
         # self.canvas.itemconfig(self.cells[(x, y)], fill="black")        
-
         self.get_logger().info("Map updated")
 
     def RotateRobot(self, angle):
@@ -394,7 +399,7 @@ class Simulator(Node, threading.Thread):
         start_y = msg.pose.pose.position.y * self.cell_size
         self.robots[0]["icon"] = tk.PhotoImage(file=ROBOT_PNG)
         # TODO rotation
-        # self.robots[0]["icon"] = self.RotateRobot(-msg.pose.pose.orientation.z)
+        self.robots[0]["icon"] = self.RotateRobot(-msg.pose.pose.orientation.z)
         self.robots[0]["item"] = self.canvas.create_image(start_x, start_y, image=self.robots[0]["icon"])
         pose = [msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.orientation.z]
         self.SetPose(self.robots[0], pose)
@@ -411,6 +416,11 @@ class Simulator(Node, threading.Thread):
     def UpdateDistance(self, msg):
         self.distance_var.set("Distance from goal: {:.2f} px".format(float(msg.data)))
     
+    def Grid(self):
+        color = OBSTACLE_CELL_COLOR if self.grid.get() == 1 else FREE_CELL_COLOR
+        for cell in self.cells:
+            self.canvas.itemconfig(self.cells[cell], outline=color)
+        
 def main():
     rclpy.init()
     app = Simulator()
